@@ -314,7 +314,7 @@ fn render_chapter(chapters: &[Chapter], idx: usize) -> String {
 fn main() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let content_dir = root.join("content");
-    let dist_dir = root.join("dist");
+    let dist_dir = root.join("docs");
 
     fs::create_dir_all(&dist_dir).expect("create dist dir");
 
