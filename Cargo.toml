@@ -1,0 +1,11 @@
+[package]
+name = "rust_learn"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "build_site"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 1

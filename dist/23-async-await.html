@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Async / Await &mdash; rustlearn</title>
+<meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #0F2236;
+  --bg-deep:     #0B1A29;
+  --grid-line:   rgba(223, 233, 240, 0.07);
+  --grid-line-strong: rgba(223, 233, 240, 0.13);
+  --paper:       #F7F1E3;
+  --paper-edge:  #E4D8B8;
+  --ink:         #1C2B2E;
+  --ink-soft:    #5C6B6E;
+  --rust:        #C5511E;
+  --rust-deep:   #8F3811;
+  --copper:      #D79A4C;
+  --teal:        #3E8E86;
+  --teal-deep:   #2B635D;
+  --code-bg:     #112030;
+  --code-bg-bar: #0C1A27;
+  --code-ink:    #DCE7EC;
+
+  --font-display: "Space Grotesk", "Avenir Next", sans-serif;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    repeating-linear-gradient(0deg, var(--grid-line) 0px, var(--grid-line) 1px, transparent 1px, transparent 28px),
+    repeating-linear-gradient(90deg, var(--grid-line) 0px, var(--grid-line) 1px, transparent 1px, transparent 28px),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--rust-deep); text-decoration-thickness: 1px; }
+a:hover { color: var(--rust); }
+
+::selection { background: var(--copper); color: var(--ink); }
+
+/* ---------- Skip link / accessibility ---------- */
+.skip-link {
+  position: absolute; left: -999px; top: 0;
+  background: var(--paper); color: var(--ink); padding: 8px 14px; z-index: 100;
+}
+.skip-link:focus { left: 12px; top: 12px; }
+a:focus-visible, button:focus-visible, .nav-link:focus-visible {
+  outline: 2px solid var(--teal); outline-offset: 2px;
+}
+
+/* ---------- Top bar (mobile only) ---------- */
+.topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 18px;
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--grid-line-strong);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar-brand {
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+.topbar-brand .mark { color: var(--rust); }
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--paper);
+  border-radius: 2px;
+  transition: opacity 0.15s ease;
+}
+
+/* ---------- Shell layout ---------- */
+.shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  background: var(--bg-deep);
+  border-right: 1px solid var(--grid-line-strong);
+  padding: 28px 0 60px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.brand-block {
+  padding: 0 24px 22px;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed var(--grid-line-strong);
+}
+.brand-block a { text-decoration: none; }
+.brand-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.28rem;
+  color: var(--paper);
+  letter-spacing: 0.01em;
+  display: flex; align-items: center; gap: 9px;
+}
+.brand-title .mark { color: var(--rust); font-weight: 700; }
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.nav-group { padding: 14px 0; }
+.nav-group-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  padding: 0 24px 8px;
+  opacity: 0.85;
+}
+.nav-link {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 24px;
+  text-decoration: none;
+  color: #C8D3D9;
+  font-size: 0.92rem;
+  border-left: 2px solid transparent;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.nav-link .n {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--copper);
+  min-width: 20px;
+}
+.nav-link:hover { background: rgba(255,255,255,0.04); color: var(--paper); }
+.nav-link.active {
+  background: rgba(197, 81, 30, 0.13);
+  border-left-color: var(--rust);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+/* ---------- Main column ---------- */
+.main { padding: 44px 56px 90px; min-width: 0; }
+
+/* ---------- Hero (home only) ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 36px;
+  align-items: center;
+  background: var(--bg-deep);
+  border: 1px solid var(--grid-line-strong);
+  border-radius: 4px;
+  padding: 46px;
+  margin-bottom: 46px;
+  position: relative;
+}
+.hero::before, .hero::after {
+  content: "+";
+  position: absolute;
+  color: var(--grid-line-strong);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+}
+.hero::before { top: 10px; left: 12px; }
+.hero::after { bottom: 10px; right: 12px; }
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  color: var(--paper);
+  font-size: 2.6rem;
+  line-height: 1.12;
+  margin: 0 0 18px;
+  letter-spacing: -0.01em;
+}
+.hero h1 .accent { color: var(--rust); }
+.hero p {
+  color: #C8D3D9;
+  font-size: 1.05rem;
+  max-width: 46ch;
+  margin: 0 0 26px;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--rust);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 11px 20px;
+  border-radius: 3px;
+  font-size: 0.95rem;
+}
+.hero-cta:hover { background: var(--rust-deep); color: var(--paper); }
+.hero-diagram { width: 100%; height: auto; }
+
+/* ---------- Section index on homepage ---------- */
+.section-block { margin-bottom: 38px; }
+.section-block h2 {
+  font-family: var(--font-display);
+  color: var(--paper);
+  font-size: 1.0rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+.section-block h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--grid-line-strong);
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.chapter-card {
+  background: var(--paper);
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  padding: 16px 18px;
+  text-decoration: none;
+  color: var(--ink);
+  display: block;
+  position: relative;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.chapter-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+}
+.chapter-card .num {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--rust-deep);
+  letter-spacing: 0.06em;
+}
+.chapter-card .title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0rem;
+  margin-top: 4px;
+  color: var(--ink);
+}
+.chapter-card .desc {
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ---------- Chapter page ---------- */
+.sheet {
+  background: var(--paper);
+  border: 1px solid var(--paper-edge);
+  border-radius: 4px;
+  padding: 48px 56px 56px;
+  position: relative;
+}
+.sheet::before, .sheet::after {
+  content: "+";
+  position: absolute;
+  color: var(--paper-edge);
+  font-family: var(--font-mono);
+}
+.sheet::before { top: 12px; left: 14px; }
+.sheet::after { bottom: 12px; right: 14px; }
+
+.sheet-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  margin-bottom: 10px;
+}
+.sheet h1 {
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  margin: 0 0 28px;
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.content h2 {
+  font-family: var(--font-display);
+  font-size: 1.32rem;
+  color: var(--ink);
+  margin: 38px 0 14px;
+  padding-left: 14px;
+  border-left: 3px solid var(--rust);
+}
+.content h3 {
+  font-family: var(--font-display);
+  font-size: 1.06rem;
+  color: var(--rust-deep);
+  margin: 26px 0 10px;
+}
+.content p { margin: 0 0 16px; color: var(--ink); }
+.content ul { margin: 0 0 16px; padding-left: 22px; }
+.content li { margin-bottom: 6px; }
+.content blockquote {
+  margin: 18px 0;
+  padding: 12px 18px;
+  background: rgba(62, 142, 134, 0.09);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 3px 3px 0;
+  color: var(--teal-deep);
+  font-family: var(--font-body);
+  font-style: italic;
+}
+.content blockquote p { margin: 0; color: inherit; }
+.content hr {
+  border: none;
+  border-top: 1px dashed var(--paper-edge);
+  margin: 32px 0;
+}
+.content code {
+  font-family: var(--font-mono);
+  background: rgba(28, 43, 46, 0.08);
+  color: var(--rust-deep);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.88em;
+}
+
+/* ---------- Code blocks ---------- */
+.code-block {
+  margin: 18px 0 22px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #1C3247;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+}
+.code-bar {
+  background: var(--code-bg-bar);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--rust);
+  display: inline-block;
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7E96A3;
+}
+.code-block pre {
+  margin: 0;
+  background: var(--code-bg);
+  padding: 18px 20px;
+  overflow-x: auto;
+}
+.code-block code {
+  font-family: var(--font-mono);
+  font-size: 0.89rem;
+  line-height: 1.62;
+  color: var(--code-ink);
+  background: none;
+  padding: 0;
+}
+
+/* token colors */
+.tk-kw { color: #E8985A; font-weight: 600; }
+.tk-ty { color: #79C0C9; }
+.tk-st { color: #B7D389; }
+.tk-nm { color: #D7A24A; }
+.tk-cm { color: #5E7686; font-style: italic; }
+.tk-mc { color: #E0764E; }
+.tk-at { color: #6F8A98; }
+.tk-lt { color: #C5511E; font-style: italic; }
+.tk-fn { color: #ECC97E; }
+.tk-op { color: #9FB4BD; }
+
+/* ---------- Prev/next footer nav ---------- */
+.chapter-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 46px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--paper-edge);
+}
+.chapter-nav a {
+  flex: 1;
+  text-decoration: none;
+  color: var(--ink);
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  padding: 14px 18px;
+  font-family: var(--font-body);
+}
+.chapter-nav a:hover { border-color: var(--rust); }
+.chapter-nav .dir {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.chapter-nav .next { text-align: right; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: 50px;
+  text-align: center;
+  color: #6F8696;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .topbar { display: flex; }
+
+  .shell {
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 47px);
+  }
+
+  .sidebar {
+    display: none;
+    position: static;
+    height: auto;
+    overflow-y: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--grid-line-strong);
+    padding-bottom: 16px;
+  }
+  .sidebar.open { display: block; }
+
+  .main { padding: 26px 18px 60px; }
+  .hero { grid-template-columns: 1fr; padding: 28px; }
+  .sheet { padding: 30px 22px 36px; }
+  .hero h1 { font-size: 2rem; }
+  .hero-diagram { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .chapter-card { transition: none; }
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar" aria-label="Site header">
+  <span class="topbar-brand"><span class="mark">&gt;_</span> rustlearn</span>
+  <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" onclick="var s=document.getElementById('sidebar');var open=s.classList.toggle('open');this.setAttribute('aria-expanded',open);"><span></span><span></span><span></span></button>
+</header>
+<div class="shell">
+<nav id="sidebar" class="sidebar" aria-label="Chapters">
+<div class="brand-block"><a href="index.html"><div class="brand-title"><span class="mark">&gt;_</span> rustlearn</div><div class="brand-sub">field notes &amp; drills</div></a></div>
+<div class="nav-group"><div class="nav-group-title">Foundations</div>
+<a class="nav-link" href="01-variables.html"><span class="n">01</span><span>Variables & Basic Types</span></a>
+<a class="nav-link" href="02-flow-control.html"><span class="n">02</span><span>Flow Control</span></a>
+<a class="nav-link" href="03-functions.html"><span class="n">03</span><span>Functions</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Ownership & Borrowing</div>
+<a class="nav-link" href="04-ownership.html"><span class="n">04</span><span>Ownership</span></a>
+<a class="nav-link" href="05-references-and-borrowing.html"><span class="n">05</span><span>References & Borrowing</span></a>
+<a class="nav-link" href="06-strings-and-slices.html"><span class="n">06</span><span>Strings & Slices</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Collections</div>
+<a class="nav-link" href="07-arrays.html"><span class="n">07</span><span>Arrays</span></a>
+<a class="nav-link" href="08-vectors.html"><span class="n">08</span><span>Vectors</span></a>
+<a class="nav-link" href="09-tuples.html"><span class="n">09</span><span>Tuples</span></a>
+<a class="nav-link" href="10-hashmap.html"><span class="n">10</span><span>HashMap</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Custom Types & Patterns</div>
+<a class="nav-link" href="11-structs.html"><span class="n">11</span><span>Structs</span></a>
+<a class="nav-link" href="12-enums.html"><span class="n">12</span><span>Enums</span></a>
+<a class="nav-link" href="13-pattern-matching.html"><span class="n">13</span><span>Pattern Matching</span></a>
+<a class="nav-link" href="14-methods.html"><span class="n">14</span><span>Methods & Associated Functions</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Generics & Abstraction</div>
+<a class="nav-link" href="15-generics.html"><span class="n">15</span><span>Generics</span></a>
+<a class="nav-link" href="16-traits.html"><span class="n">16</span><span>Traits</span></a>
+<a class="nav-link" href="17-type-conversion.html"><span class="n">17</span><span>Type Conversion</span></a>
+<a class="nav-link" href="18-lifetimes.html"><span class="n">18</span><span>Lifetimes</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Project Structure</div>
+<a class="nav-link" href="19-crates-and-modules.html"><span class="n">19</span><span>Crates and Modules</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Error Handling</div>
+<a class="nav-link" href="20-result-and-panic.html"><span class="n">20</span><span>Result and Panic</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Advanced Rust</div>
+<a class="nav-link" href="21-functional-programming.html"><span class="n">21</span><span>Functional Programming</span></a>
+<a class="nav-link" href="22-smart-pointers.html"><span class="n">22</span><span>Smart Pointers</span></a>
+<a class="nav-link active" href="23-async-await.html"><span class="n">23</span><span>Async / Await</span></a>
+</div>
+</nav>
+<main id="main" class="main">
+<article class="sheet">
+  <div class="sheet-eyebrow">Advanced Rust &middot; Sheet 23 of 23</div>
+  <h1>Async / Await</h1>
+  <div class="content">
+<p>Rust's async model is built on <strong>futures</strong> — values that represent a computation that hasn't completed yet. They're pure data structures until something (an <strong>executor</strong>) actually drives them to completion. The <code>async</code>/<code>await</code> syntax is how you write that logic without manually implementing the <code>Future</code> trait.</p>
+<h2>The mental model: poll-based, not callback-based</h2>
+<p>Unlike Node.js callbacks or Python coroutines, Rust futures don't run until they're <em>polled</em>. An executor (from a runtime like Tokio or async-std) manages a queue of futures and calls <code>.poll()</code> on each one repeatedly until it's done. If a future isn't ready (e.g., waiting for a socket), it returns <code>Poll::Pending</code> and registers a <strong>waker</strong> so the executor can re-poll it when the data arrives.</p>
+<p>This means a future that you create but never <code>await</code> (and never pass to an executor) does <em>nothing</em>. There's no implicit runtime.</p>
+<h2><code>async fn</code>: a function that returns a Future</h2>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// `async fn` transforms the return type from `T` into `impl Future&lt;Output = T&gt;`.</span>
+<span class="tk-cm">// The body doesn't run immediately when the function is called —</span>
+<span class="tk-cm">// it runs when the returned future is awaited.</span>
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">say_hello</span>() <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
+    <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello from async&quot;</span>)
+}
+
+<span class="tk-cm">// `.await` suspends the current future until `say_hello()` produces its output.</span>
+<span class="tk-cm">// You can only use `.await` inside an `async fn` (or an async block).</span>
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">greet</span>() {
+    <span class="tk-kw">let</span> msg = <span class="tk-fn">say_hello</span>().<span class="tk-kw">await</span>;
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{msg}&quot;</span>);
+}</code></pre></div>
+<h2>You need an executor to run async code</h2>
+<p>Rust's standard library defines <code>Future</code> but ships <strong>no</strong> async executor. You bring one in as a dependency. The two most common are <strong>Tokio</strong> and <strong>async-std</strong>. The <code>#[tokio::main]</code> macro wraps your <code>async fn main</code> so there's an executor running before any <code>await</code> is reached.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// In Cargo.toml:</span>
+<span class="tk-cm">// [dependencies]</span>
+<span class="tk-cm">// tokio = { version = &quot;1&quot;, features = [&quot;full&quot;] }</span>
+
+<span class="tk-at">#[tokio::main]</span>
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> result = <span class="tk-fn">fetch_data</span>().<span class="tk-kw">await</span>;
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;got: {result}&quot;</span>);
+}
+
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">fetch_data</span>() <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
+    <span class="tk-cm">// In real code this would be a network call, file read, etc.</span>
+    <span class="tk-cm">// tokio::time::sleep, reqwest::get(), tokio::fs::read_to_string()</span>
+    <span class="tk-cm">// all return futures you'd .await here.</span>
+    <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;some data&quot;</span>)
+}</code></pre></div>
+<h2>Running two futures concurrently with <code>tokio::join!</code></h2>
+<p><code>.await</code> on a single future is sequential — the next line doesn't start until the first one finishes. To run two futures at the <em>same time</em> and wait for both, use <code>join!</code>:</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>time<span class="tk-op">::</span><span class="tk-ty">Duration</span>;
+<span class="tk-kw">use</span> tokio<span class="tk-op">::</span>time<span class="tk-op">::</span>sleep;
+
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">task_a</span>() <span class="tk-op">-&gt;</span> <span class="tk-op">&amp;</span><span class="tk-lt">'static</span> <span class="tk-ty">str</span> {
+    <span class="tk-fn">sleep</span>(<span class="tk-ty">Duration</span><span class="tk-op">::</span><span class="tk-fn">from_millis</span>(<span class="tk-nm">200</span>)).<span class="tk-kw">await</span>;
+    <span class="tk-st">&quot;A done&quot;</span>
+}
+
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">task_b</span>() <span class="tk-op">-&gt;</span> <span class="tk-op">&amp;</span><span class="tk-lt">'static</span> <span class="tk-ty">str</span> {
+    <span class="tk-fn">sleep</span>(<span class="tk-ty">Duration</span><span class="tk-op">::</span><span class="tk-fn">from_millis</span>(<span class="tk-nm">100</span>)).<span class="tk-kw">await</span>;
+    <span class="tk-st">&quot;B done&quot;</span>
+}
+
+<span class="tk-at">#[tokio::main]</span>
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-cm">// Both tasks start immediately and run concurrently on the same thread.</span>
+    <span class="tk-cm">// Total wall time ≈ 200ms, not 300ms.</span>
+    <span class="tk-kw">let</span> (a, b) = tokio<span class="tk-op">::</span><span class="tk-mc">join!</span>(<span class="tk-fn">task_a</span>(), <span class="tk-fn">task_b</span>());
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{a}, {b}&quot;</span>);
+}</code></pre></div>
+<h2>Spawning a background task with <code>tokio::spawn</code></h2>
+<p><code>join!</code> waits for both futures in the current task. <code>spawn</code> schedules a future as an independent task — it can run on a different thread entirely, and you hold a <code>JoinHandle</code> to collect the result later.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-at">#[tokio::main]</span>
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> handle = tokio<span class="tk-op">::</span><span class="tk-fn">spawn</span>(<span class="tk-kw">async</span> {
+        <span class="tk-cm">// This future is now scheduled independently.</span>
+        <span class="tk-nm">42_u32</span>
+    });
+
+    <span class="tk-kw">let</span> result = handle.<span class="tk-kw">await</span>.<span class="tk-fn">unwrap</span>(); <span class="tk-cm">// JoinHandle&lt;T&gt; is itself a Future</span>
+    <span class="tk-mc">assert_eq!</span>(result, <span class="tk-nm">42</span>);
+}</code></pre></div>
+<h2><code>async</code> blocks</h2>
+<p>You don't need a full <code>async fn</code> — any block can be made into a future with <code>async { ... }</code>. Useful for capturing variables into a future inline.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-at">#[tokio::main]</span>
+<span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> x = <span class="tk-nm">10</span>;
+
+    <span class="tk-kw">let</span> future = <span class="tk-kw">async</span> <span class="tk-kw">move</span> {
+        <span class="tk-cm">// `move` captures `x` by value, like with closures</span>
+        x <span class="tk-op">*</span> <span class="tk-nm">2</span>
+    };
+
+    <span class="tk-kw">let</span> result = future.<span class="tk-kw">await</span>;
+    <span class="tk-mc">assert_eq!</span>(result, <span class="tk-nm">20</span>);
+}</code></pre></div>
+<h2>Why <code>async</code> trait methods need extra care</h2>
+<p>Async functions in traits aren't directly supported in stable Rust before 1.75 without the <code>async-trait</code> crate, because <code>async fn</code> desugars to returning <code>impl Future</code>, and trait methods can't return <code>impl Trait</code> in a stable, object-safe way (yet). From Rust 1.75 onward, <code>async fn</code> in traits is stable for many use cases.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// Rust 1.75+ stable approach:</span>
+<span class="tk-kw">trait</span> <span class="tk-ty">Downloader</span> {
+    <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">download</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>, url: <span class="tk-op">&amp;</span><span class="tk-ty">str</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span>;
+}
+
+<span class="tk-kw">struct</span> <span class="tk-ty">HttpDownloader</span>;
+
+<span class="tk-kw">impl</span> <span class="tk-ty">Downloader</span> <span class="tk-kw">for</span> <span class="tk-ty">HttpDownloader</span> {
+    <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">download</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>, url: <span class="tk-op">&amp;</span><span class="tk-ty">str</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
+        <span class="tk-mc">format!</span>(<span class="tk-st">&quot;fetched: {url}&quot;</span>)
+    }
+}</code></pre></div>
+<h2>The key facts, in one place</h2>
+<ul>
+<li><code>async fn foo() -&gt; T</code> actually returns <code>impl Future&lt;Output = T&gt;</code>. The body is a state machine generated by the compiler.</li>
+<li><code>.await</code> suspends the <em>current</em> future and hands control back to the executor until the inner future is ready.</li>
+<li>Nothing runs until an executor polls it. There is no implicit thread or timer.</li>
+<li>Concurrency: use <code>join!</code> (or <code>select!</code>) to drive multiple futures simultaneously on one task. Use <code>spawn</code> to put work on a separate task (possibly a separate thread in a multi-threaded runtime).</li>
+<li>Sending futures across threads requires they are <code>Send</code> — this means their captured variables must also be <code>Send</code>. <code>Rc&lt;T&gt;</code> and <code>RefCell&lt;T&gt;</code> are not <code>Send</code>; <code>Arc&lt;T&gt;</code> and <code>Mutex&lt;T&gt;</code> are.</li>
+</ul>
+
+  </div>
+  <nav class="chapter-nav" aria-label="Chapter navigation">
+    <a href="22-smart-pointers.html"><span class="dir">&larr; Previous</span>Sheet 22 &middot; Smart Pointers</a>
+    <span></span>
+  </nav>
+</article>
+<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+</main>
+</div>
+</body>
+</html>

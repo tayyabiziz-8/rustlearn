@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Pointers &mdash; rustlearn</title>
+<meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #0F2236;
+  --bg-deep:     #0B1A29;
+  --grid-line:   rgba(223, 233, 240, 0.07);
+  --grid-line-strong: rgba(223, 233, 240, 0.13);
+  --paper:       #F7F1E3;
+  --paper-edge:  #E4D8B8;
+  --ink:         #1C2B2E;
+  --ink-soft:    #5C6B6E;
+  --rust:        #C5511E;
+  --rust-deep:   #8F3811;
+  --copper:      #D79A4C;
+  --teal:        #3E8E86;
+  --teal-deep:   #2B635D;
+  --code-bg:     #112030;
+  --code-bg-bar: #0C1A27;
+  --code-ink:    #DCE7EC;
+
+  --font-display: "Space Grotesk", "Avenir Next", sans-serif;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    repeating-linear-gradient(0deg, var(--grid-line) 0px, var(--grid-line) 1px, transparent 1px, transparent 28px),
+    repeating-linear-gradient(90deg, var(--grid-line) 0px, var(--grid-line) 1px, transparent 1px, transparent 28px),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--rust-deep); text-decoration-thickness: 1px; }
+a:hover { color: var(--rust); }
+
+::selection { background: var(--copper); color: var(--ink); }
+
+/* ---------- Skip link / accessibility ---------- */
+.skip-link {
+  position: absolute; left: -999px; top: 0;
+  background: var(--paper); color: var(--ink); padding: 8px 14px; z-index: 100;
+}
+.skip-link:focus { left: 12px; top: 12px; }
+a:focus-visible, button:focus-visible, .nav-link:focus-visible {
+  outline: 2px solid var(--teal); outline-offset: 2px;
+}
+
+/* ---------- Top bar (mobile only) ---------- */
+.topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 18px;
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--grid-line-strong);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar-brand {
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+.topbar-brand .mark { color: var(--rust); }
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--paper);
+  border-radius: 2px;
+  transition: opacity 0.15s ease;
+}
+
+/* ---------- Shell layout ---------- */
+.shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  background: var(--bg-deep);
+  border-right: 1px solid var(--grid-line-strong);
+  padding: 28px 0 60px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.brand-block {
+  padding: 0 24px 22px;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed var(--grid-line-strong);
+}
+.brand-block a { text-decoration: none; }
+.brand-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.28rem;
+  color: var(--paper);
+  letter-spacing: 0.01em;
+  display: flex; align-items: center; gap: 9px;
+}
+.brand-title .mark { color: var(--rust); font-weight: 700; }
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.nav-group { padding: 14px 0; }
+.nav-group-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  padding: 0 24px 8px;
+  opacity: 0.85;
+}
+.nav-link {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 24px;
+  text-decoration: none;
+  color: #C8D3D9;
+  font-size: 0.92rem;
+  border-left: 2px solid transparent;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.nav-link .n {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--copper);
+  min-width: 20px;
+}
+.nav-link:hover { background: rgba(255,255,255,0.04); color: var(--paper); }
+.nav-link.active {
+  background: rgba(197, 81, 30, 0.13);
+  border-left-color: var(--rust);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+/* ---------- Main column ---------- */
+.main { padding: 44px 56px 90px; min-width: 0; }
+
+/* ---------- Hero (home only) ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 36px;
+  align-items: center;
+  background: var(--bg-deep);
+  border: 1px solid var(--grid-line-strong);
+  border-radius: 4px;
+  padding: 46px;
+  margin-bottom: 46px;
+  position: relative;
+}
+.hero::before, .hero::after {
+  content: "+";
+  position: absolute;
+  color: var(--grid-line-strong);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+}
+.hero::before { top: 10px; left: 12px; }
+.hero::after { bottom: 10px; right: 12px; }
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  color: var(--paper);
+  font-size: 2.6rem;
+  line-height: 1.12;
+  margin: 0 0 18px;
+  letter-spacing: -0.01em;
+}
+.hero h1 .accent { color: var(--rust); }
+.hero p {
+  color: #C8D3D9;
+  font-size: 1.05rem;
+  max-width: 46ch;
+  margin: 0 0 26px;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--rust);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 11px 20px;
+  border-radius: 3px;
+  font-size: 0.95rem;
+}
+.hero-cta:hover { background: var(--rust-deep); color: var(--paper); }
+.hero-diagram { width: 100%; height: auto; }
+
+/* ---------- Section index on homepage ---------- */
+.section-block { margin-bottom: 38px; }
+.section-block h2 {
+  font-family: var(--font-display);
+  color: var(--paper);
+  font-size: 1.0rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+.section-block h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--grid-line-strong);
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.chapter-card {
+  background: var(--paper);
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  padding: 16px 18px;
+  text-decoration: none;
+  color: var(--ink);
+  display: block;
+  position: relative;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.chapter-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+}
+.chapter-card .num {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--rust-deep);
+  letter-spacing: 0.06em;
+}
+.chapter-card .title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0rem;
+  margin-top: 4px;
+  color: var(--ink);
+}
+.chapter-card .desc {
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ---------- Chapter page ---------- */
+.sheet {
+  background: var(--paper);
+  border: 1px solid var(--paper-edge);
+  border-radius: 4px;
+  padding: 48px 56px 56px;
+  position: relative;
+}
+.sheet::before, .sheet::after {
+  content: "+";
+  position: absolute;
+  color: var(--paper-edge);
+  font-family: var(--font-mono);
+}
+.sheet::before { top: 12px; left: 14px; }
+.sheet::after { bottom: 12px; right: 14px; }
+
+.sheet-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  margin-bottom: 10px;
+}
+.sheet h1 {
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  margin: 0 0 28px;
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.content h2 {
+  font-family: var(--font-display);
+  font-size: 1.32rem;
+  color: var(--ink);
+  margin: 38px 0 14px;
+  padding-left: 14px;
+  border-left: 3px solid var(--rust);
+}
+.content h3 {
+  font-family: var(--font-display);
+  font-size: 1.06rem;
+  color: var(--rust-deep);
+  margin: 26px 0 10px;
+}
+.content p { margin: 0 0 16px; color: var(--ink); }
+.content ul { margin: 0 0 16px; padding-left: 22px; }
+.content li { margin-bottom: 6px; }
+.content blockquote {
+  margin: 18px 0;
+  padding: 12px 18px;
+  background: rgba(62, 142, 134, 0.09);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 3px 3px 0;
+  color: var(--teal-deep);
+  font-family: var(--font-body);
+  font-style: italic;
+}
+.content blockquote p { margin: 0; color: inherit; }
+.content hr {
+  border: none;
+  border-top: 1px dashed var(--paper-edge);
+  margin: 32px 0;
+}
+.content code {
+  font-family: var(--font-mono);
+  background: rgba(28, 43, 46, 0.08);
+  color: var(--rust-deep);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.88em;
+}
+
+/* ---------- Code blocks ---------- */
+.code-block {
+  margin: 18px 0 22px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #1C3247;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+}
+.code-bar {
+  background: var(--code-bg-bar);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--rust);
+  display: inline-block;
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7E96A3;
+}
+.code-block pre {
+  margin: 0;
+  background: var(--code-bg);
+  padding: 18px 20px;
+  overflow-x: auto;
+}
+.code-block code {
+  font-family: var(--font-mono);
+  font-size: 0.89rem;
+  line-height: 1.62;
+  color: var(--code-ink);
+  background: none;
+  padding: 0;
+}
+
+/* token colors */
+.tk-kw { color: #E8985A; font-weight: 600; }
+.tk-ty { color: #79C0C9; }
+.tk-st { color: #B7D389; }
+.tk-nm { color: #D7A24A; }
+.tk-cm { color: #5E7686; font-style: italic; }
+.tk-mc { color: #E0764E; }
+.tk-at { color: #6F8A98; }
+.tk-lt { color: #C5511E; font-style: italic; }
+.tk-fn { color: #ECC97E; }
+.tk-op { color: #9FB4BD; }
+
+/* ---------- Prev/next footer nav ---------- */
+.chapter-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 46px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--paper-edge);
+}
+.chapter-nav a {
+  flex: 1;
+  text-decoration: none;
+  color: var(--ink);
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  padding: 14px 18px;
+  font-family: var(--font-body);
+}
+.chapter-nav a:hover { border-color: var(--rust); }
+.chapter-nav .dir {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.chapter-nav .next { text-align: right; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: 50px;
+  text-align: center;
+  color: #6F8696;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .topbar { display: flex; }
+
+  .shell {
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 47px);
+  }
+
+  .sidebar {
+    display: none;
+    position: static;
+    height: auto;
+    overflow-y: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--grid-line-strong);
+    padding-bottom: 16px;
+  }
+  .sidebar.open { display: block; }
+
+  .main { padding: 26px 18px 60px; }
+  .hero { grid-template-columns: 1fr; padding: 28px; }
+  .sheet { padding: 30px 22px 36px; }
+  .hero h1 { font-size: 2rem; }
+  .hero-diagram { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .chapter-card { transition: none; }
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar" aria-label="Site header">
+  <span class="topbar-brand"><span class="mark">&gt;_</span> rustlearn</span>
+  <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" onclick="var s=document.getElementById('sidebar');var open=s.classList.toggle('open');this.setAttribute('aria-expanded',open);"><span></span><span></span><span></span></button>
+</header>
+<div class="shell">
+<nav id="sidebar" class="sidebar" aria-label="Chapters">
+<div class="brand-block"><a href="index.html"><div class="brand-title"><span class="mark">&gt;_</span> rustlearn</div><div class="brand-sub">field notes &amp; drills</div></a></div>
+<div class="nav-group"><div class="nav-group-title">Foundations</div>
+<a class="nav-link" href="01-variables.html"><span class="n">01</span><span>Variables & Basic Types</span></a>
+<a class="nav-link" href="02-flow-control.html"><span class="n">02</span><span>Flow Control</span></a>
+<a class="nav-link" href="03-functions.html"><span class="n">03</span><span>Functions</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Ownership & Borrowing</div>
+<a class="nav-link" href="04-ownership.html"><span class="n">04</span><span>Ownership</span></a>
+<a class="nav-link" href="05-references-and-borrowing.html"><span class="n">05</span><span>References & Borrowing</span></a>
+<a class="nav-link" href="06-strings-and-slices.html"><span class="n">06</span><span>Strings & Slices</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Collections</div>
+<a class="nav-link" href="07-arrays.html"><span class="n">07</span><span>Arrays</span></a>
+<a class="nav-link" href="08-vectors.html"><span class="n">08</span><span>Vectors</span></a>
+<a class="nav-link" href="09-tuples.html"><span class="n">09</span><span>Tuples</span></a>
+<a class="nav-link" href="10-hashmap.html"><span class="n">10</span><span>HashMap</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Custom Types & Patterns</div>
+<a class="nav-link" href="11-structs.html"><span class="n">11</span><span>Structs</span></a>
+<a class="nav-link" href="12-enums.html"><span class="n">12</span><span>Enums</span></a>
+<a class="nav-link" href="13-pattern-matching.html"><span class="n">13</span><span>Pattern Matching</span></a>
+<a class="nav-link" href="14-methods.html"><span class="n">14</span><span>Methods & Associated Functions</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Generics & Abstraction</div>
+<a class="nav-link" href="15-generics.html"><span class="n">15</span><span>Generics</span></a>
+<a class="nav-link" href="16-traits.html"><span class="n">16</span><span>Traits</span></a>
+<a class="nav-link" href="17-type-conversion.html"><span class="n">17</span><span>Type Conversion</span></a>
+<a class="nav-link" href="18-lifetimes.html"><span class="n">18</span><span>Lifetimes</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Project Structure</div>
+<a class="nav-link" href="19-crates-and-modules.html"><span class="n">19</span><span>Crates and Modules</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Error Handling</div>
+<a class="nav-link" href="20-result-and-panic.html"><span class="n">20</span><span>Result and Panic</span></a>
+</div>
+<div class="nav-group"><div class="nav-group-title">Advanced Rust</div>
+<a class="nav-link" href="21-functional-programming.html"><span class="n">21</span><span>Functional Programming</span></a>
+<a class="nav-link active" href="22-smart-pointers.html"><span class="n">22</span><span>Smart Pointers</span></a>
+<a class="nav-link" href="23-async-await.html"><span class="n">23</span><span>Async / Await</span></a>
+</div>
+</nav>
+<main id="main" class="main">
+<article class="sheet">
+  <div class="sheet-eyebrow">Advanced Rust &middot; Sheet 22 of 23</div>
+  <h1>Smart Pointers</h1>
+  <div class="content">
+<p>A <strong>smart pointer</strong> is a struct that holds a pointer and adds behavior on top — often some form of automatic cleanup or reference counting. They implement <code>Deref</code> (so they can be used like regular references) and <code>Drop</code> (so they clean up automatically when they go out of scope).</p>
+<h2><code>Box&lt;T&gt;</code>: heap allocation, single owner</h2>
+<p><code>Box&lt;T&gt;</code> is the simplest smart pointer — it puts a value on the heap and gives you a pointer to it, with the same single-ownership rules as any <code>let</code> binding. The heap allocation is freed when the <code>Box</code> drops.</p>
+<p>Three common reasons to reach for it:</p>
+<p><strong>1. The type is too large for the stack, or you need a stable address.</strong></p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> large_data = <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>([<span class="tk-nm">0u8</span>; <span class="tk-nm">10_000</span>]);
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;allocated {} bytes on the heap&quot;</span>, large_data.<span class="tk-fn">len</span>());
+}</code></pre></div>
+<p><strong>2. A recursive type (a type that contains itself) — the compiler needs a fixed size, which a <code>Box</code> provides.</strong></p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// Without Box, the compiler rejects this:</span>
+<span class="tk-cm">//   error[E0072]: recursive type `List` has infinite size</span>
+<span class="tk-cm">//</span>
+<span class="tk-cm">// With Box, each node is a known, pointer-sized slot on the heap.</span>
+<span class="tk-at">#[derive(Debug)]</span>
+<span class="tk-kw">enum</span> <span class="tk-ty">List</span> {
+    <span class="tk-ty">Cons</span>(<span class="tk-ty">i32</span>, <span class="tk-ty">Box</span>&lt;<span class="tk-ty">List</span>&gt;),
+    <span class="tk-ty">Nil</span>,
+}
+
+<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> list = <span class="tk-ty">List</span><span class="tk-op">::</span><span class="tk-ty">Cons</span>(<span class="tk-nm">1</span>, <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">List</span><span class="tk-op">::</span><span class="tk-ty">Cons</span>(<span class="tk-nm">2</span>, <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">List</span><span class="tk-op">::</span><span class="tk-ty">Nil</span>))));
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{list:?}&quot;</span>);
+}</code></pre></div>
+<p><strong>3. You want to return a trait object whose concrete type isn't known at compile time.</strong></p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">trait</span> <span class="tk-ty">Shape</span> {
+    <span class="tk-kw">fn</span> <span class="tk-fn">area</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">f64</span>;
+}
+
+<span class="tk-kw">struct</span> <span class="tk-ty">Circle</span> { radius: <span class="tk-ty">f64</span> }
+<span class="tk-kw">impl</span> <span class="tk-ty">Shape</span> <span class="tk-kw">for</span> <span class="tk-ty">Circle</span> {
+    <span class="tk-kw">fn</span> <span class="tk-fn">area</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">f64</span> { std<span class="tk-op">::</span><span class="tk-ty">f64</span><span class="tk-op">::</span>consts<span class="tk-op">::</span><span class="tk-ty">PI</span> <span class="tk-op">*</span> <span class="tk-kw">self</span>.radius <span class="tk-op">*</span> <span class="tk-kw">self</span>.radius }
+}
+
+<span class="tk-kw">fn</span> <span class="tk-fn">make_shape</span>(kind: <span class="tk-op">&amp;</span><span class="tk-ty">str</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">Box</span>&lt;<span class="tk-kw">dyn</span> <span class="tk-ty">Shape</span>&gt; {
+    <span class="tk-kw">match</span> kind {
+        <span class="tk-st">&quot;circle&quot;</span> <span class="tk-op">=&gt;</span> <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">Circle</span> { radius: <span class="tk-nm">3.0</span> }),
+        _ <span class="tk-op">=&gt;</span> <span class="tk-mc">panic!</span>(<span class="tk-st">&quot;unknown shape&quot;</span>),
+    }
+}
+
+<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> s = <span class="tk-fn">make_shape</span>(<span class="tk-st">&quot;circle&quot;</span>);
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;area: {:.2}&quot;</span>, s.<span class="tk-fn">area</span>());
+}</code></pre></div>
+<h2><code>Rc&lt;T&gt;</code>: shared ownership within a single thread</h2>
+<p><code>Rc&lt;T&gt;</code> (&quot;reference counted&quot;) lets multiple parts of a program co-own the same heap value. Each <code>Rc::clone</code> increments a counter; each <code>drop</code> decrements it; the value is freed when the counter reaches zero.</p>
+<blockquote><p><code>Rc</code> is deliberately not <code>Send</code> — it can only be used on a single thread. For multi-threaded shared ownership, use <code>Arc&lt;T&gt;</code> (atomic reference count) instead.</p></blockquote>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>rc<span class="tk-op">::</span><span class="tk-ty">Rc</span>;
+
+<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> value = <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>));
+
+    <span class="tk-kw">let</span> a = <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">clone</span>(<span class="tk-op">&amp;</span>value); <span class="tk-cm">// increments reference count; does NOT copy the String</span>
+    <span class="tk-kw">let</span> b = <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">clone</span>(<span class="tk-op">&amp;</span>value);
+
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{value} / {a} / {b}&quot;</span>);
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;owners: {}&quot;</span>, <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">strong_count</span>(<span class="tk-op">&amp;</span>value)); <span class="tk-cm">// 3</span>
+
+    <span class="tk-fn">drop</span>(a);
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;after drop: {}&quot;</span>, <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">strong_count</span>(<span class="tk-op">&amp;</span>value)); <span class="tk-cm">// 2</span>
+} <span class="tk-cm">// value and b drop here -&gt; count -&gt; 0 -&gt; String freed</span></code></pre></div>
+<p>The limitation: <code>Rc&lt;T&gt;</code> gives you a shared <em>immutable</em> reference. You can't mutate through it without combining it with <code>RefCell</code>.</p>
+<h2><code>RefCell&lt;T&gt;</code>: interior mutability (borrow checking at runtime)</h2>
+<p>Rust's normal borrow rules are checked at compile time. <code>RefCell&lt;T&gt;</code> moves those checks to runtime: <code>.borrow()</code> gives an immutable <code>Ref&lt;T&gt;</code>, <code>.borrow_mut()</code> gives a mutable <code>RefMut&lt;T&gt;</code>, and if you violate the rules (e.g., get two mutable borrows) the program <strong>panics</strong> instead of failing to compile.</p>
+<p>This is useful when you know your access pattern is safe but the compiler's static analysis can't prove it — a common case is mutable state inside a callback or a struct that needs to mutate itself while being accessed through a shared reference.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>cell<span class="tk-op">::</span><span class="tk-ty">RefCell</span>;
+
+<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> data = <span class="tk-ty">RefCell</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-mc">vec!</span>[<span class="tk-nm">1</span>, <span class="tk-nm">2</span>, <span class="tk-nm">3</span>]);
+
+    {
+        <span class="tk-kw">let</span> <span class="tk-kw">mut</span> v = data.<span class="tk-fn">borrow_mut</span>(); <span class="tk-cm">// runtime check: gets the mutable guard</span>
+        v.<span class="tk-fn">push</span>(<span class="tk-nm">4</span>);
+    } <span class="tk-cm">// guard dropped here — the mutable borrow is released</span>
+
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{:?}&quot;</span>, data.<span class="tk-fn">borrow</span>()); <span class="tk-cm">// [1, 2, 3, 4]</span>
+}</code></pre></div>
+<h2><code>Rc&lt;RefCell&lt;T&gt;&gt;</code>: shared, mutable ownership</h2>
+<p>The most common pattern you'll see: wrap <code>RefCell&lt;T&gt;</code> in an <code>Rc&lt;T&gt;</code> to get multiple owners who can each mutate the inner value.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>cell<span class="tk-op">::</span><span class="tk-ty">RefCell</span>;
+<span class="tk-kw">use</span> std<span class="tk-op">::</span>rc<span class="tk-op">::</span><span class="tk-ty">Rc</span>;
+
+<span class="tk-at">#[derive(Debug)]</span>
+<span class="tk-kw">struct</span> <span class="tk-ty">Node</span> {
+    value: <span class="tk-ty">i32</span>,
+    children: <span class="tk-ty">Vec</span>&lt;<span class="tk-ty">Rc</span>&lt;<span class="tk-ty">RefCell</span>&lt;<span class="tk-ty">Node</span>&gt;&gt;&gt;,
+}
+
+<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> leaf = <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">RefCell</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">Node</span> { value: <span class="tk-nm">1</span>, children: <span class="tk-mc">vec!</span>[] }));
+    <span class="tk-kw">let</span> branch = <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">RefCell</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">Node</span> {
+        value: <span class="tk-nm">5</span>,
+        children: <span class="tk-mc">vec!</span>[<span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">clone</span>(<span class="tk-op">&amp;</span>leaf)],
+    }));
+
+    <span class="tk-cm">// Mutate the leaf through the Rc&lt;RefCell&lt;...&gt;&gt;:</span>
+    leaf.<span class="tk-fn">borrow_mut</span>().value = <span class="tk-nm">10</span>;
+
+    <span class="tk-cm">// Both `leaf` and `branch.children[0]` see the new value.</span>
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;leaf: {}&quot;</span>, leaf.<span class="tk-fn">borrow</span>().value);
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;via branch: {}&quot;</span>, branch.<span class="tk-fn">borrow</span>().children[<span class="tk-nm">0</span>].<span class="tk-fn">borrow</span>().value);
+}</code></pre></div>
+<h2>The <code>Deref</code> trait: making a smart pointer feel like a reference</h2>
+<p><code>Deref</code> is what allows <code>*box_value</code> to work just like <code>*reference</code> — and it's what powers <strong>deref coercion</strong>: the compiler automatically inserts <code>*</code> chains so that <code>&amp;Box&lt;String&gt;</code> can be passed wherever <code>&amp;str</code> is expected, for example.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>ops<span class="tk-op">::</span><span class="tk-ty">Deref</span>;
+
+<span class="tk-kw">struct</span> <span class="tk-ty">MyBox</span>&lt;<span class="tk-ty">T</span>&gt;(<span class="tk-ty">T</span>);
+
+<span class="tk-kw">impl</span>&lt;<span class="tk-ty">T</span>&gt; <span class="tk-ty">Deref</span> <span class="tk-kw">for</span> <span class="tk-ty">MyBox</span>&lt;<span class="tk-ty">T</span>&gt; {
+    <span class="tk-kw">type</span> <span class="tk-ty">Target</span> = <span class="tk-ty">T</span>;
+    <span class="tk-kw">fn</span> <span class="tk-fn">deref</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-op">&amp;</span><span class="tk-ty">T</span> {
+        <span class="tk-op">&amp;</span><span class="tk-kw">self</span>.<span class="tk-nm">0</span>
+    }
+}
+
+<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> boxed = <span class="tk-ty">MyBox</span>(<span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>));
+
+    <span class="tk-cm">// Deref coercion: &amp;MyBox&lt;String&gt; -&gt; &amp;String -&gt; &amp;str automatically.</span>
+    <span class="tk-kw">fn</span> <span class="tk-fn">greet</span>(s: <span class="tk-op">&amp;</span><span class="tk-ty">str</span>) { <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{s}&quot;</span>); }
+    <span class="tk-fn">greet</span>(<span class="tk-op">&amp;</span>boxed);
+}</code></pre></div>
+<h2>The <code>Drop</code> trait: running code on cleanup</h2>
+<p><code>Drop</code> lets you specify what happens when a value goes out of scope. Smart pointers use it to free memory or release resources — you can implement it on your own types too.</p>
+<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Resource</span> {
+    name: <span class="tk-ty">String</span>,
+}
+
+<span class="tk-kw">impl</span> <span class="tk-ty">Drop</span> <span class="tk-kw">for</span> <span class="tk-ty">Resource</span> {
+    <span class="tk-kw">fn</span> <span class="tk-fn">drop</span>(<span class="tk-op">&amp;</span><span class="tk-kw">mut</span> <span class="tk-kw">self</span>) {
+        <span class="tk-mc">println!</span>(<span class="tk-st">&quot;releasing resource: {}&quot;</span>, <span class="tk-kw">self</span>.name);
+    }
+}
+
+<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
+    <span class="tk-kw">let</span> _a = <span class="tk-ty">Resource</span> { name: <span class="tk-st">&quot;A&quot;</span>.<span class="tk-fn">to_string</span>() };
+    <span class="tk-kw">let</span> _b = <span class="tk-ty">Resource</span> { name: <span class="tk-st">&quot;B&quot;</span>.<span class="tk-fn">to_string</span>() };
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;before end of scope&quot;</span>);
+} <span class="tk-cm">// B drops, then A drops — LIFO order (reverse of declaration)</span></code></pre></div>
+<blockquote><p>To force an early drop, use <code>std::mem::drop(value)</code> — this moves the value into <code>drop</code>, which runs the destructor immediately. Calling <code>value.drop()</code> directly is a compile error (you'd be calling <code>Drop::drop</code>, which takes <code>&amp;mut self</code>, not by value, and Rust disallows calling the destructor manually to prevent a double-free).</p></blockquote>
+
+  </div>
+  <nav class="chapter-nav" aria-label="Chapter navigation">
+    <a href="21-functional-programming.html"><span class="dir">&larr; Previous</span>Sheet 21 &middot; Functional Programming</a>
+    <a class="next" href="23-async-await.html"><span class="dir">Next &rarr;</span>Sheet 23 &middot; Async / Await</a>
+  </nav>
+</article>
+<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+</main>
+</div>
+</body>
+</html>
