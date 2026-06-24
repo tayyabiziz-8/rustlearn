@@ -8,7 +8,7 @@ fn main() {
     let arr: [i32; 5] = [1, 2, 3, 4, 5];
     assert_eq!(arr.len(), 5);
 
-    let repeated: [i32; 100] = [1; 100]; // [1, 1, 1, ..., 1] — 100 elements
+    let repeated: [i32; 100] = [1; 100]; // [1, 1, 1, ..., 1] - 100 elements
     assert_eq!(repeated[0], 1);
     assert_eq!(repeated.len(), 100);
 }
@@ -37,7 +37,7 @@ fn main() {
 
     match arr.get(5) {
         Some(v) => println!("found {v}"),
-        None => println!("index 5 is out of bounds — handled safely"),
+        None => println!("index 5 is out of bounds - handled safely"),
     }
 }
 ```

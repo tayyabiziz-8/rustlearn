@@ -1,7 +1,7 @@
 # Functional Programming
 desc: Closures, what they capture, and the iterator adapters that replace most manual loops.
 
-Rust isn't a purely functional language, but closures and iterators give you most of the functional toolkit — and the type system tracks exactly what a closure captures, so there's no hidden runtime cost or surprise mutation.
+Rust isn't a purely functional language, but closures and iterators give you most of the functional toolkit - and the type system tracks exactly what a closure captures, so there's no hidden runtime cost or surprise mutation.
 
 ## Closures
 
@@ -11,7 +11,7 @@ A closure is an anonymous function that can capture variables from the scope it 
 fn main() {
     let factor = 3;
 
-    // |params| body — type annotations are usually inferred
+    // |params| body - type annotations are usually inferred
     let multiply = |x: i32| x * factor; // captures `factor` by reference
 
     assert_eq!(multiply(5), 15);
@@ -27,7 +27,7 @@ Rust infers the *least* restrictive capture mode that makes the closure body com
 fn main() {
     let name = String::from("Ferris");
 
-    // Captures `name` by immutable reference — name is still usable after.
+    // Captures `name` by immutable reference - name is still usable after.
     let greet = || println!("hello, {name}");
     greet();
     println!("still usable: {name}");
@@ -43,7 +43,7 @@ fn main() {
 }
 ```
 
-`move` forces the closure to take ownership of everything it uses, instead of borrowing — essential when the closure needs to outlive the scope it was created in (a very common requirement when spawning a thread).
+`move` forces the closure to take ownership of everything it uses, instead of borrowing - essential when the closure needs to outlive the scope it was created in (a very common requirement when spawning a thread).
 
 ```rust
 use std::thread;
@@ -64,7 +64,7 @@ fn main() {
 
 ## The three closure traits
 
-Every closure implements one or more of `Fn`, `FnMut`, `FnOnce`, depending on how it uses its captures — this is what lets a function parameter say "accept any closure that only reads its captures" vs. "...that needs to consume them."
+Every closure implements one or more of `Fn`, `FnMut`, `FnOnce`, depending on how it uses its captures - this is what lets a function parameter say "accept any closure that only reads its captures" vs. "...that needs to consume them."
 
 | Trait | Can be called | Typical use |
 |---|---|---|
@@ -94,7 +94,7 @@ fn main() {
 
 ## Iterators
 
-An iterator produces values one at a time and is **lazy** — calling `.map()` doesn't do any work by itself; nothing actually runs until something consumes the iterator (`.collect()`, `for`, `.sum()`, etc.).
+An iterator produces values one at a time and is **lazy** - calling `.map()` doesn't do any work by itself; nothing actually runs until something consumes the iterator (`.collect()`, `for`, `.sum()`, etc.).
 
 ```rust
 fn main() {
@@ -113,7 +113,7 @@ fn main() {
 
 ## Chaining adapters
 
-This is where iterators replace most hand-written loops — each step describes *what* transformation happens, and the chain only runs through the data once when finally consumed.
+This is where iterators replace most hand-written loops - each step describes *what* transformation happens, and the chain only runs through the data once when finally consumed.
 
 ```rust
 fn main() {
@@ -130,7 +130,7 @@ fn main() {
 }
 ```
 
-`fold` is the general-purpose reducer everything else (`sum`, `max`, `count`...) is built on conceptually — it threads an accumulator through every element.
+`fold` is the general-purpose reducer everything else (`sum`, `max`, `count`...) is built on conceptually - it threads an accumulator through every element.
 
 ```rust
 fn main() {
@@ -153,4 +153,4 @@ fn main() {
 }
 ```
 
-> Iterator chains aren't just shorter — the compiler typically optimizes them down to the same machine code as the equivalent hand-written loop (a "zero-cost abstraction"), so reaching for `.map().filter().collect()` over a manual loop is a readability choice, not a performance trade-off.
+> Iterator chains aren't just shorter - the compiler typically optimizes them down to the same machine code as the equivalent hand-written loop (a "zero-cost abstraction"), so reaching for `.map().filter().collect()` over a manual loop is a readability choice, not a performance trade-off.

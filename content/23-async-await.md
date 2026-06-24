@@ -1,7 +1,7 @@
 # Async / Await
 desc: Futures, the async/await syntax, and why Rust async needs an executor to actually run.
 
-Rust's async model is built on **futures** — values that represent a computation that hasn't completed yet. They're pure data structures until something (an **executor**) actually drives them to completion. The `async`/`await` syntax is how you write that logic without manually implementing the `Future` trait.
+Rust's async model is built on **futures** - values that represent a computation that hasn't completed yet. They're pure data structures until something (an **executor**) actually drives them to completion. The `async`/`await` syntax is how you write that logic without manually implementing the `Future` trait.
 
 ## The mental model: poll-based, not callback-based
 
@@ -13,7 +13,7 @@ This means a future that you create but never `await` (and never pass to an exec
 
 ```rust
 // `async fn` transforms the return type from `T` into `impl Future<Output = T>`.
-// The body doesn't run immediately when the function is called —
+// The body doesn't run immediately when the function is called -
 // it runs when the returned future is awaited.
 async fn say_hello() -> String {
     String::from("hello from async")
@@ -52,7 +52,7 @@ async fn fetch_data() -> String {
 
 ## Running two futures concurrently with `tokio::join!`
 
-`.await` on a single future is sequential — the next line doesn't start until the first one finishes. To run two futures at the *same time* and wait for both, use `join!`:
+`.await` on a single future is sequential - the next line doesn't start until the first one finishes. To run two futures at the *same time* and wait for both, use `join!`:
 
 ```rust
 use std::time::Duration;
@@ -79,7 +79,7 @@ async fn main() {
 
 ## Spawning a background task with `tokio::spawn`
 
-`join!` waits for both futures in the current task. `spawn` schedules a future as an independent task — it can run on a different thread entirely, and you hold a `JoinHandle` to collect the result later.
+`join!` waits for both futures in the current task. `spawn` schedules a future as an independent task - it can run on a different thread entirely, and you hold a `JoinHandle` to collect the result later.
 
 ```rust
 #[tokio::main]
@@ -96,7 +96,7 @@ async fn main() {
 
 ## `async` blocks
 
-You don't need a full `async fn` — any block can be made into a future with `async { ... }`. Useful for capturing variables into a future inline.
+You don't need a full `async fn` - any block can be made into a future with `async { ... }`. Useful for capturing variables into a future inline.
 
 ```rust
 #[tokio::main]
@@ -138,4 +138,4 @@ impl Downloader for HttpDownloader {
 - `.await` suspends the *current* future and hands control back to the executor until the inner future is ready.
 - Nothing runs until an executor polls it. There is no implicit thread or timer.
 - Concurrency: use `join!` (or `select!`) to drive multiple futures simultaneously on one task. Use `spawn` to put work on a separate task (possibly a separate thread in a multi-threaded runtime).
-- Sending futures across threads requires they are `Send` — this means their captured variables must also be `Send`. `Rc<T>` and `RefCell<T>` are not `Send`; `Arc<T>` and `Mutex<T>` are.
+- Sending futures across threads requires they are `Send` - this means their captured variables must also be `Send`. `Rc<T>` and `RefCell<T>` are not `Send`; `Arc<T>` and `Mutex<T>` are.

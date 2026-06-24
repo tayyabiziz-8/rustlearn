@@ -25,4 +25,4 @@ fn main() {
 }
 ```
 
-> The `println!("{t:?}")` form above needs the `Debug` trait, which tuples implement automatically as long as every element does. Tuples longer than 12 elements lose this automatic `Debug`/`PartialEq` support — past that point, reach for a named `struct` instead.
+> The `println!("{t:?}")` form above needs the `Debug` trait, which tuples implement automatically as long as every element does. Tuples longer than 12 elements lose this automatic `Debug`/`PartialEq` support - past that point, reach for a named `struct` instead.

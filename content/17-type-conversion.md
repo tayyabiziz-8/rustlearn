@@ -1,22 +1,22 @@
 # Type Conversion
 desc: as-casting and its sharp edges, From/Into, TryFrom/TryInto, and parsing strings.
 
-Rust never converts types implicitly — no silent `int` to `float` promotion like in C. Every conversion is something you write explicitly, which means the compiler can show you exactly where data might be reshaped or lost.
+Rust never converts types implicitly - no silent `int` to `float` promotion like in C. Every conversion is something you write explicitly, which means the compiler can show you exactly where data might be reshaped or lost.
 
 ## `as`: the blunt instrument
 
-`as` works between numeric types, and between a few other specific pairs (like `char` and `u32`). It's infallible by design — it never panics — which means it has to make a decision when a value doesn't fit, and that decision is "truncate" or "saturate," not "error."
+`as` works between numeric types, and between a few other specific pairs (like `char` and `u32`). It's infallible by design - it never panics - which means it has to make a decision when a value doesn't fit, and that decision is "truncate" or "saturate," not "error."
 
 ```rust
 fn main() {
     // Integer-to-integer: truncates by dropping the high bits.
     let big: i32 = 300;
     let truncated = big as u8;
-    assert_eq!(truncated, 44); // 300 % 256 == 44 — almost certainly not what you wanted
+    assert_eq!(truncated, 44); // 300 % 256 == 44 - almost certainly not what you wanted
 
     // Float-to-integer: saturates at the target type's bounds instead of
     // wrapping or producing garbage (this has been the stable behavior
-    // since Rust 1.45 — earlier `as` casts here were undefined behavior).
+    // since Rust 1.45 - earlier `as` casts here were undefined behavior).
     let too_big = 1e10_f64 as i32;
     assert_eq!(too_big, i32::MAX);
 
@@ -35,7 +35,7 @@ fn main() {
 
 ## `From` / `Into`: infallible, type-directed conversion
 
-Implementing `From<A> for B` gives you `B::from(a)` for free — and also `a.into()`, because the standard library provides a blanket `Into` implementation for every `From`. These are the idiomatic way to convert between your *own* types.
+Implementing `From<A> for B` gives you `B::from(a)` for free - and also `a.into()`, because the standard library provides a blanket `Into` implementation for every `From`. These are the idiomatic way to convert between your *own* types.
 
 ```rust
 struct Celsius(f64);
@@ -58,11 +58,11 @@ fn main() {
 }
 ```
 
-`From` is also how the standard library lets one function signature accept several input types — `String::from(&str)`, `Vec::from([T; N])`, and `?`-based error conversion (see [Result and Panic](20-result-and-panic.html)) all lean on it.
+`From` is also how the standard library lets one function signature accept several input types - `String::from(&str)`, `Vec::from([T; N])`, and `?`-based error conversion (see [Result and Panic](20-result-and-panic.html)) all lean on it.
 
 ## `TryFrom` / `TryInto`: conversion that can fail
 
-When a conversion might not be valid for every input, implement `TryFrom` instead — it returns a `Result`, so the failure path is forced into the open instead of silently truncating like `as` would.
+When a conversion might not be valid for every input, implement `TryFrom` instead - it returns a `Result`, so the failure path is forced into the open instead of silently truncating like `as` would.
 
 ```rust
 use std::convert::TryFrom;
@@ -98,7 +98,7 @@ fn main() {
 
 ## Parsing strings into numbers
 
-`str::parse::<T>()` is built on `FromStr`, and returns a `Result` — parsing is a textbook example of a conversion that can fail (the text might not be a valid number at all).
+`str::parse::<T>()` is built on `FromStr`, and returns a `Result` - parsing is a textbook example of a conversion that can fail (the text might not be a valid number at all).
 
 ```rust
 fn main() {
@@ -117,7 +117,7 @@ fn main() {
 
 ## The other direction: making a type printable
 
-`ToString` is implemented automatically for anything that implements `Display` — so implement `Display`, and `.to_string()` comes along for free.
+`ToString` is implemented automatically for anything that implements `Display` - so implement `Display`, and `.to_string()` comes along for free.
 
 ```rust
 use std::fmt;

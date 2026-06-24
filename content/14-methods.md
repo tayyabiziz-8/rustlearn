@@ -1,7 +1,7 @@
 # Methods & Associated Functions
 desc: impl blocks, &self vs self, and the difference between a method and an associated function.
 
-An `impl` block attaches functions to a type. Inside it, a function that takes `self` (in some form) is a **method**, called with `value.method()`. A function that doesn't take `self` is an **associated function**, called with `Type::function()` — `String::from(...)` is one you've already used.
+An `impl` block attaches functions to a type. Inside it, a function that takes `self` (in some form) is a **method**, called with `value.method()`. A function that doesn't take `self` is an **associated function**, called with `Type::function()` - `String::from(...)` is one you've already used.
 
 ```rust
 struct Rectangle {
@@ -21,7 +21,7 @@ fn main() {
 }
 ```
 
-## `&self`, `&mut self`, `self` — three different borrows
+## `&self`, `&mut self`, `self` - three different borrows
 
 ```rust
 struct Counter {
@@ -29,7 +29,7 @@ struct Counter {
 }
 
 impl Counter {
-    // Associated function — no `self` parameter. Conventionally named `new`.
+    // Associated function - no `self` parameter. Conventionally named `new`.
     fn new() -> Self {
         Self { count: 0 }
     }
@@ -59,7 +59,7 @@ fn main() {
     assert_eq!(c.value(), 2);
 
     let final_value = c.into_value();
-    // c can no longer be used here — into_value consumed it
+    // c can no longer be used here - into_value consumed it
     assert_eq!(final_value, 2);
 }
 ```

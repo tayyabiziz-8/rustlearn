@@ -1,7 +1,7 @@
 # Crates and Modules
-desc: How Rust projects are organized — crates, modules, paths, and visibility.
+desc: How Rust projects are organized - crates, modules, paths, and visibility.
 
-A **crate** is the unit Rust compiles at once — either a *binary crate* (`src/main.rs`, produces an executable) or a *library crate* (`src/lib.rs`, produces something other crates can depend on). A **module** (`mod`) is how you organize code *within* a crate into a namespace tree.
+A **crate** is the unit Rust compiles at once - either a *binary crate* (`src/main.rs`, produces an executable) or a *library crate* (`src/lib.rs`, produces something other crates can depend on). A **module** (`mod`) is how you organize code *within* a crate into a namespace tree.
 
 ## Modules, inline
 
@@ -14,7 +14,7 @@ mod front_of_house {
     }
 
     mod serving {
-        // private by default — only visible inside front_of_house
+        // private by default - only visible inside front_of_house
         fn take_order() {
             println!("order taken");
         }
@@ -41,7 +41,7 @@ mod front_of_house {
     }
 }
 
-// mod is itself private by default too — without `pub mod hosting` above,
+// mod is itself private by default too - without `pub mod hosting` above,
 // the line below wouldn't compile, even though add_to_waitlist is pub:
 // error[E0603]: module `hosting` is private
 fn main() {
@@ -69,7 +69,7 @@ fn main() {
 }
 ```
 
-> Convention: `use` a function's *parent module* (`hosting::add_to_waitlist()`), not the function itself — that keeps the call site clear about where the function comes from. For structs, enums, and traits, the opposite convention applies: `use` the type itself directly (e.g. `use std::collections::HashMap;`, then just write `HashMap::new()`).
+> Convention: `use` a function's *parent module* (`hosting::add_to_waitlist()`), not the function itself - that keeps the call site clear about where the function comes from. For structs, enums, and traits, the opposite convention applies: `use` the type itself directly (e.g. `use std::collections::HashMap;`, then just write `HashMap::new()`).
 
 ## Splitting modules across files
 
@@ -139,7 +139,7 @@ serde = "1.0"
 rand = "0.8"
 ```
 
-Since the 2018 edition, you don't need `extern crate` to use them — `use` alone is enough:
+Since the 2018 edition, you don't need `extern crate` to use them - `use` alone is enough:
 
 ```text
 use rand::Rng;

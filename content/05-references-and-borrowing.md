@@ -1,10 +1,10 @@
 # References & Borrowing
 desc: Accessing data without taking ownership, and the rules that make it safe.
 
-A reference (`&T` or `&mut T`) lets you access a value without taking ownership of it — this is called **borrowing**.
+A reference (`&T` or `&mut T`) lets you access a value without taking ownership of it - this is called **borrowing**.
 
 **The borrowing rules, enforced at compile time:**
-1. At any given time, you can have *either* one mutable reference *or* any number of immutable references — never both.
+1. At any given time, you can have *either* one mutable reference *or* any number of immutable references - never both.
 2. References must always point to valid data (no dangling references).
 
 ## Immutable borrows
@@ -42,7 +42,7 @@ fn main() {
     let mut s = String::from("hello");
 
     let r1 = &s;
-    let r2 = &s; // fine — multiple immutable borrows are allowed
+    let r2 = &s; // fine - multiple immutable borrows are allowed
     println!("{r1} and {r2}");
     // r1 and r2's last use was the line above, so their borrow "ends" here
     // (this is the compiler's non-lexical lifetime analysis)
@@ -73,7 +73,7 @@ fn main() {
 // fn dangle() -> &String {
 //     let s = String::from("hello");
 //     &s
-// } // s is dropped here — the reference we tried to return would point
+// } // s is dropped here - the reference we tried to return would point
 //   // at freed memory. The compiler rejects this before it can happen.
 
 // The fix: return the owned value itself, transferring ownership out.
@@ -88,4 +88,4 @@ fn main() {
 }
 ```
 
-> Borrowing a `String` followed by mutating it through the *original* owner is rejected — the immutable borrow and the mutation can't coexist. For example, taking `&s` and then calling `s.clear()` while the reference is still in use is a compile error, because `clear()` requires `&mut self` and you already have an outstanding `&s`.
+> Borrowing a `String` followed by mutating it through the *original* owner is rejected - the immutable borrow and the mutation can't coexist. For example, taking `&s` and then calling `s.clear()` while the reference is still in use is a compile error, because `clear()` requires `&mut self` and you already have an outstanding `&s`.

@@ -3,9 +3,9 @@ desc: String vs &str vs string literal, UTF-8 byte indexing, and building/growin
 
 Three things in Rust are all "string-shaped," and they're easy to confuse at first:
 
-- **`String`** — heap-allocated, owns its data, growable, mutable.
-- **`&str`** ("string slice") — a *view* into UTF-8 bytes somewhere else; it doesn't own the data.
-- **String literal** (`"hello"`) — baked into the binary; its type is `&'static str`, a string slice.
+- **`String`** - heap-allocated, owns its data, growable, mutable.
+- **`&str`** ("string slice") - a *view* into UTF-8 bytes somewhere else; it doesn't own the data.
+- **String literal** (`"hello"`) - baked into the binary; its type is `&'static str`, a string slice.
 
 ## Slicing a String
 
@@ -19,7 +19,7 @@ fn main() {
 }
 ```
 
-`&String` slices to `&str` automatically wherever a `&str` is expected — this is called **deref coercion**.
+`&String` slices to `&str` automatically wherever a `&str` is expected - this is called **deref coercion**.
 
 ```rust
 fn first_word(s: &str) -> &str {
@@ -33,11 +33,11 @@ fn main() {
 }
 ```
 
-> Slices borrow from their source. If you call `.clear()` on the original `String` while a slice into it is still alive, that's a compile error — the slice would otherwise point at memory that's about to be wiped.
+> Slices borrow from their source. If you call `.clear()` on the original `String` while a slice into it is still alive, that's a compile error - the slice would otherwise point at memory that's about to be wiped.
 
 ## UTF-8: indexing is by byte, not by character
 
-A Rust `String` is UTF-8 bytes under the hood. ASCII characters take 1 byte; many others take more — so slicing at the wrong boundary panics.
+A Rust `String` is UTF-8 bytes under the hood. ASCII characters take 1 byte; many others take more - so slicing at the wrong boundary panics.
 
 ```rust
 fn main() {
@@ -93,7 +93,7 @@ fn main() {
 fn main() {
     let s = String::from("hello");
 
-    let bytes_view: &[u8] = s.as_bytes(); // borrows — s is still usable
+    let bytes_view: &[u8] = s.as_bytes(); // borrows - s is still usable
     assert_eq!(bytes_view, b"hello");
 
     let bytes_owned: Vec<u8> = s.into_bytes(); // consumes s, returns owned Vec<u8>

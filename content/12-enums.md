@@ -1,5 +1,5 @@
 # Enums
-desc: Tagged unions — variants that can carry different data, and the built-in Option enum.
+desc: Tagged unions - variants that can carry different data, and the built-in Option enum.
 
 An `enum` defines a type as one of several named **variants**. Unlike enums in C, Rust variants can carry their own data, making them a real tagged union.
 
@@ -55,7 +55,7 @@ fn show_message(msg: Message) {
 
 ## `Option<T>`: no null, just an explicit "maybe"
 
-Rust has no `null`. Instead, the standard library defines `Option<T>` — and the compiler forces you to handle the `None` case before you can use the value, so a "null pointer"-style bug becomes a compile error instead of a crash.
+Rust has no `null`. Instead, the standard library defines `Option<T>` - and the compiler forces you to handle the `None` case before you can use the value, so a "null pointer"-style bug becomes a compile error instead of a crash.
 
 ```rust
 enum Option<T> {

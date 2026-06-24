@@ -1,5 +1,5 @@
 # Ownership
-desc: Rust's compile-time memory model — the rule set that replaces a garbage collector.
+desc: Rust's compile-time memory model - the rule set that replaces a garbage collector.
 
 Ownership is the set of rules the compiler checks **at compile time**, with zero runtime cost, to decide when memory gets freed.
 
@@ -10,7 +10,7 @@ Ownership is the set of rules the compiler checks **at compile time**, with zero
 
 ## Stack vs. heap, in one example
 
-`String` is heap-allocated and growable. The variable itself — a small fixed-size record of pointer, length, and capacity — lives on the stack; the actual character data lives on the heap.
+`String` is heap-allocated and growable. The variable itself - a small fixed-size record of pointer, length, and capacity - lives on the stack; the actual character data lives on the heap.
 
 ```rust
 fn main() {
@@ -20,13 +20,13 @@ fn main() {
 }
 ```
 
-Plain numbers, by contrast, live entirely on the stack and have a known, fixed size — so they're cheap to duplicate.
+Plain numbers, by contrast, live entirely on the stack and have a known, fixed size - so they're cheap to duplicate.
 
 ```rust
 fn main() {
     let x = 5;
     let y = x; // a full bit-for-bit copy, two independent values
-    assert_eq!(x, 5); // x is still valid — i32 implements the Copy trait
+    assert_eq!(x, 5); // x is still valid - i32 implements the Copy trait
     assert_eq!(y, 5);
 }
 ```
@@ -45,19 +45,19 @@ fn main() {
 
     // println!("{s1}"); // compile error: value borrowed after move
 
-    println!("{s2}"); // fine — s2 is the sole owner now
+    println!("{s2}"); // fine - s2 is the sole owner now
 }
 ```
 
 ## Clone: an explicit deep copy
 
-When you actually want two independent copies of heap data, call `.clone()` — it's deliberately explicit, so a deep copy never happens silently.
+When you actually want two independent copies of heap data, call `.clone()` - it's deliberately explicit, so a deep copy never happens silently.
 
 ```rust
 fn main() {
     let s1 = String::from("hello");
     let s2 = s1.clone();
-    println!("s1 = {s1}, s2 = {s2}"); // both valid — separate heap allocations
+    println!("s1 = {s1}, s2 = {s2}"); // both valid - separate heap allocations
 }
 ```
 
@@ -69,7 +69,7 @@ Passing a value to a function moves it, exactly like an assignment does.
 fn main() {
     let s1 = String::from("hello");
     takes_ownership(s1);
-    // s1 is invalid from here on — ownership moved into the function
+    // s1 is invalid from here on - ownership moved into the function
 
     let s2 = gives_ownership();
     let s3 = takes_and_gives_back(s2);
@@ -77,7 +77,7 @@ fn main() {
 
     let x = 5;
     makes_copy(x);
-    println!("{x}"); // fine — i32 is Copy, so `x` was duplicated, not moved
+    println!("{x}"); // fine - i32 is Copy, so `x` was duplicated, not moved
 }
 
 fn takes_ownership(some_string: String) {

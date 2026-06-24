@@ -13,7 +13,7 @@ fn main() {
     scores.insert("Ashley", 69);
     scores.insert("Katie", 58);
 
-    // .get() returns Option<&V> — there's no guarantee the key exists
+    // .get() returns Option<&V> - there's no guarantee the key exists
     let score = scores.get("Sunface");
     assert_eq!(score, Some(&98));
 
@@ -62,7 +62,7 @@ fn main() {
     player_stats.entry("health").or_insert(100);
     assert_eq!(player_stats["health"], 100);
 
-    // or_insert again — does nothing, since "health" already exists.
+    // or_insert again - does nothing, since "health" already exists.
     player_stats.entry("health").or_insert_with(random_stat_buff);
     assert_eq!(player_stats["health"], 100);
 
@@ -80,7 +80,7 @@ fn random_stat_buff() -> u8 {
 
 ## Using a struct as a key
 
-Any type used as a `HashMap` key must implement `Eq` and `Hash` (and `PartialEq`, which `Eq` requires) — `#[derive(...)]` handles this for you.
+Any type used as a `HashMap` key must implement `Eq` and `Hash` (and `PartialEq`, which `Eq` requires) - `#[derive(...)]` handles this for you.
 
 ```rust
 use std::collections::HashMap;

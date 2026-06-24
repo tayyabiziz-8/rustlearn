@@ -55,7 +55,7 @@ fn main() {
 
 ## Tuple structs
 
-A tuple struct has a name but unnamed, positional fields — useful for giving a tuple shape a distinct type.
+A tuple struct has a name but unnamed, positional fields - useful for giving a tuple shape a distinct type.
 
 ```rust
 struct Point(i32, i32, i32);
@@ -96,7 +96,7 @@ fn main() {
     println!("age: {age}");
     println!("name: {name}");
 
-    // person as a whole is now partially moved — person.name is gone —
+    // person as a whole is now partially moved - person.name is gone -
     // but the still-valid field can still be reached through it:
     println!("age via person: {}", person.age);
 

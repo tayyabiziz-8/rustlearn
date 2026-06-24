@@ -1,9 +1,9 @@
 # Lifetimes
 desc: Lifetime annotations, why the compiler sometimes needs them, structs holding references, and 'static.
 
-Every reference is valid for some scope — its **lifetime**. Most of the time the compiler works this out on its own (see "elision" below). Lifetime annotations only become necessary when the compiler can't infer, on its own, how the lifetime of an output relates to the lifetimes of the inputs.
+Every reference is valid for some scope - its **lifetime**. Most of the time the compiler works this out on its own (see "elision" below). Lifetime annotations only become necessary when the compiler can't infer, on its own, how the lifetime of an output relates to the lifetimes of the inputs.
 
-Lifetimes don't change how long anything actually lives — they're a way of *describing*, to the compiler, a relationship that's already true in your code, so it can verify there's no dangling reference.
+Lifetimes don't change how long anything actually lives - they're a way of *describing*, to the compiler, a relationship that's already true in your code, so it can verify there's no dangling reference.
 
 ## The motivating problem
 
@@ -15,7 +15,7 @@ Lifetimes don't change how long anything actually lives — they're a way of *de
 // }
 //
 // error[E0106]: missing lifetime specifier
-// The function might return x or it might return y — the compiler can't
+// The function might return x or it might return y - the compiler can't
 // tell which input the output reference is tied to, so it can't verify
 // the returned reference will still be valid wherever it ends up used.
 ```
@@ -37,7 +37,7 @@ fn main() {
         let s2 = String::from("xyz");
         result = longest(s1.as_str(), s2.as_str());
         assert_eq!(result, "long string is long");
-    } // s2 dropped here — but `result` was already used above, while s2
+    } // s2 dropped here - but `result` was already used above, while s2
       // was still alive, so this compiles fine.
 }
 ```
@@ -80,7 +80,7 @@ fn main() {
 
 ## Structs that hold a reference
 
-A struct can't hold a reference without naming the lifetime — Rust needs to guarantee the struct never outlives the data it's borrowing.
+A struct can't hold a reference without naming the lifetime - Rust needs to guarantee the struct never outlives the data it's borrowing.
 
 ```rust
 struct Excerpt<'a> {
@@ -99,7 +99,7 @@ fn main() {
     let first_sentence = novel.split('.').next().unwrap();
 
     let excerpt = Excerpt { part: first_sentence };
-    // `excerpt` can't outlive `novel`, because `part` borrows from it —
+    // `excerpt` can't outlive `novel`, because `part` borrows from it -
     // the compiler enforces that statically.
 
     assert_eq!(excerpt.announce("note"), "Call me Ishmael");
@@ -117,4 +117,4 @@ fn main() {
 }
 ```
 
-> `'static` is sometimes reached for as a quick fix to silence a lifetime error — but that usually just moves the problem, by forcing data to live longer than it needs to (or forcing a clone). Treat a `'static` requirement as a sign to double-check whether the reference should really be returned at all, rather than as the default fix.
+> `'static` is sometimes reached for as a quick fix to silence a lifetime error - but that usually just moves the problem, by forcing data to live longer than it needs to (or forcing a clone). Treat a `'static` requirement as a sign to double-check whether the reference should really be returned at all, rather than as the default fix.

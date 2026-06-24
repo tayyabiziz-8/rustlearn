@@ -3,7 +3,7 @@ desc: match, if let, matches!, and binding sub-patterns with @.
 
 ## match
 
-`match` compares a value against a series of patterns and runs the code for the first one that fits. It's **exhaustive** — the compiler refuses to build unless every possible case is handled, which is what makes it safer than a chain of `if/else if`.
+`match` compares a value against a series of patterns and runs the code for the first one that fits. It's **exhaustive** - the compiler refuses to build unless every possible case is handled, which is what makes it safer than a chain of `if/else if`.
 
 ```rust
 enum Direction {
