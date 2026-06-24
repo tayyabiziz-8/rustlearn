@@ -6,7 +6,7 @@ A static site generator for a Rust learning reference, written entirely in Rust.
 
 ## What it is
 
-23 chapters covering Rust from variables to async/await, built from personal study notes. Every code example is fully worked — no ellipsis, no "fill in the rest yourself."
+23 chapters covering Rust from variables to async/await, built from personal study notes. Every code example is fully worked, no ellipsis, no "fill in the rest yourself."
 
 The generator itself is ~400 lines of Rust across four files: a Markdown parser, a Rust syntax highlighter, and a page renderer. It produces plain HTML and CSS with no JavaScript, no build pipeline, and no runtime.
 
@@ -81,16 +81,6 @@ Your content here, in Markdown.
 Edit the `.md` file in `content/`, run `cargo run`. The entire site regenerates.
 
 Markdown supported: `# headings`, ` ```rust ``` ` fenced code blocks, `- lists`, `> blockquotes`, `**bold**`, `*italic*`, `` `inline code` ``, `[links](url)`, `---` horizontal rules.
-
----
-
-## Deploying
-
-The `dist/` folder is a self-contained static site. No server required.
-
-**GitHub Pages** — push the repo, go to Settings → Pages → Source: `main` branch, `/dist` folder.
-
-**Netlify / Vercel** — drag and drop the `dist/` folder onto the dashboard.
 
 ---
 
