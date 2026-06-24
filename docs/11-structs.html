@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Structs &mdash; rustlearn</title>
+<title>Structs | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -607,7 +607,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(p.age, <span class="tk-nm">30</span>);
 }</code></pre></div>
 <h2>Tuple structs</h2>
-<p>A tuple struct has a name but unnamed, positional fields — useful for giving a tuple shape a distinct type.</p>
+<p>A tuple struct has a name but unnamed, positional fields. Useful for giving a tuple shape a distinct type.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Point</span>(<span class="tk-ty">i32</span>, <span class="tk-ty">i32</span>, <span class="tk-ty">i32</span>);
 
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
@@ -622,7 +622,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(z, <span class="tk-nm">255</span>);
 }</code></pre></div>
 <h2>Partial moves</h2>
-<p>Destructuring a struct can move <em>some</em> fields out while leaving others behind, as long as the remaining fields are only borrowed (<code>ref</code>) or are themselves <code>Copy</code>.</p>
+<p>Destructuring a struct can move <em>some</em> fields out while leaving others behind, as long as the remaining fields are only borrowed (via <code>ref</code>) or are themselves <code>Copy</code>.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-at">#[derive(Debug)]</span>
 <span class="tk-kw">struct</span> <span class="tk-ty">Person</span> {
     name: <span class="tk-ty">String</span>,
@@ -641,8 +641,8 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;age: {age}&quot;</span>);
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;name: {name}&quot;</span>);
 
-    <span class="tk-cm">// person as a whole is now partially moved — person.name is gone —</span>
-    <span class="tk-cm">// but the still-valid field can still be reached through it:</span>
+    <span class="tk-cm">// person as a whole is now partially moved, but the still-valid</span>
+    <span class="tk-cm">// field can still be reached through it:</span>
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;age via person: {}&quot;</span>, person.age);
 
     <span class="tk-cm">// println!(&quot;{person:?}&quot;); // compile error: partially moved value</span>
@@ -654,7 +654,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="12-enums.html"><span class="dir">Next &rarr;</span>Sheet 12 &middot; Enums</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

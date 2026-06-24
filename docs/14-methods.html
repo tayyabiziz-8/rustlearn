@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Methods & Associated Functions &mdash; rustlearn</title>
+<title>Methods & Associated Functions | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,7 +563,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Custom Types & Patterns &middot; Sheet 14 of 23</div>
   <h1>Methods & Associated Functions</h1>
   <div class="content">
-<p>An <code>impl</code> block attaches functions to a type. Inside it, a function that takes <code>self</code> (in some form) is a <strong>method</strong>, called with <code>value.method()</code>. A function that doesn't take <code>self</code> is an <strong>associated function</strong>, called with <code>Type::function()</code> — <code>String::from(...)</code> is one you've already used.</p>
+<p>An <code>impl</code> block attaches functions to a type. Inside it, a function that takes <code>self</code> in some form is a <strong>method</strong>, called with <code>value.method()</code>. A function that does not take <code>self</code> is an <strong>associated function</strong>, called with <code>Type::function()</code>. You have already used one: <code>String::from(...)</code>.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Rectangle</span> {
     width: <span class="tk-ty">u32</span>,
     height: <span class="tk-ty">u32</span>,
@@ -579,18 +579,18 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> rect = <span class="tk-ty">Rectangle</span> { width: <span class="tk-nm">30</span>, height: <span class="tk-nm">50</span> };
     <span class="tk-mc">assert_eq!</span>(rect.<span class="tk-fn">area</span>(), <span class="tk-nm">1500</span>);
 }</code></pre></div>
-<h2><code>&amp;self</code>, <code>&amp;mut self</code>, <code>self</code> — three different borrows</h2>
+<h2><code>&amp;self</code>, <code>&amp;mut self</code>, <code>self</code>: three different borrows</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Counter</span> {
     count: <span class="tk-ty">u32</span>,
 }
 
 <span class="tk-kw">impl</span> <span class="tk-ty">Counter</span> {
-    <span class="tk-cm">// Associated function — no `self` parameter. Conventionally named `new`.</span>
+    <span class="tk-cm">// Associated function with no `self` parameter. Conventionally named `new`.</span>
     <span class="tk-kw">fn</span> <span class="tk-fn">new</span>() <span class="tk-op">-&gt;</span> <span class="tk-kw">Self</span> {
         <span class="tk-kw">Self</span> { count: <span class="tk-nm">0</span> }
     }
 
-    <span class="tk-cm">// &amp;self: read-only borrow. Use this whenever you don't need to mutate.</span>
+    <span class="tk-cm">// &amp;self: read-only borrow. Use this whenever you do not need to mutate.</span>
     <span class="tk-kw">fn</span> <span class="tk-fn">value</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">u32</span> {
         <span class="tk-kw">self</span>.count
     }
@@ -602,7 +602,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 
     <span class="tk-cm">// self (no &amp;): takes ownership and consumes the value. Used when a</span>
     <span class="tk-cm">// method should transform something into a different value and the</span>
-    <span class="tk-cm">// original shouldn't be usable afterward.</span>
+    <span class="tk-cm">// original should not be usable afterward.</span>
     <span class="tk-kw">fn</span> <span class="tk-fn">into_value</span>(<span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">u32</span> {
         <span class="tk-kw">self</span>.count
     }
@@ -615,7 +615,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(c.<span class="tk-fn">value</span>(), <span class="tk-nm">2</span>);
 
     <span class="tk-kw">let</span> final_value = c.<span class="tk-fn">into_value</span>();
-    <span class="tk-cm">// c can no longer be used here — into_value consumed it</span>
+    <span class="tk-cm">// c can no longer be used here, into_value consumed it</span>
     <span class="tk-mc">assert_eq!</span>(final_value, <span class="tk-nm">2</span>);
 }</code></pre></div>
 <h2>Methods on an enum</h2>
@@ -648,7 +648,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="15-generics.html"><span class="dir">Next &rarr;</span>Sheet 15 &middot; Generics</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

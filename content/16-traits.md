@@ -1,11 +1,11 @@
 # Traits
 desc: Shared behavior across types, default implementations, trait bounds, and dynamic dispatch.
 
-A `trait` defines behavior that multiple types can share - similar in spirit to an interface in other languages, but with the option of providing a default implementation.
+A `trait` defines behavior that multiple types can share. It is similar in spirit to an interface in other languages, but with the option of providing a default implementation.
 
 ```rust
 trait Hello {
-    // Default implementation - types can use this as-is...
+    // Default implementation. Types can use this as-is...
     fn say_hi(&self) -> String {
         String::from("hi")
     }
@@ -20,7 +20,7 @@ impl Hello for Student {
     fn say_something(&self) -> String {
         String::from("I'm a good student")
     }
-    // say_hi is not overridden - it uses the trait's default
+    // say_hi is not overridden, it uses the trait's default
 }
 
 struct Teacher;
@@ -73,7 +73,7 @@ fn main() {
 
 ## Static dispatch vs. dynamic dispatch
 
-There are two ways to write a function that accepts "anything implementing trait `Animal`":
+There are two ways to write a function that accepts anything implementing trait `Animal`:
 
 ```rust
 trait Animal {
@@ -90,15 +90,15 @@ impl Animal for Cat {
 }
 
 // STATIC DISPATCH: `impl Animal` generates a separate, specialized copy of
-// this function for every concrete type it's called with. No runtime cost,
+// this function for every concrete type it is called with. No runtime cost,
 // but every call site must know the concrete type at compile time.
 fn greet_static(animal: &impl Animal) {
     println!("static: {}", animal.speak());
 }
 
-// DYNAMIC DISPATCH: `&dyn Animal` is a "fat pointer" - data pointer plus a
-// vtable pointer for method lookup. One function body handles every type,
-// resolved at runtime, at the cost of a small indirection per call.
+// DYNAMIC DISPATCH: `&dyn Animal` is a fat pointer, meaning a data pointer
+// plus a vtable pointer for method lookup. One function body handles every
+// type, resolved at runtime, at the cost of a small indirection per call.
 fn greet_dynamic(animal: &dyn Animal) {
     println!("dynamic: {}", animal.speak());
 }
@@ -110,8 +110,8 @@ fn main() {
     greet_static(&dog);
     greet_static(&cat);
 
-    // dyn is also what lets you store DIFFERENT concrete types in one Vec -
-    // see the trait-object example in the Vectors chapter.
+    // dyn is also what lets you store DIFFERENT concrete types in one Vec.
+    // See the trait-object example in the Vectors chapter.
     let animals: Vec<Box<dyn Animal>> = vec![Box::new(dog), Box::new(cat)];
     for a in &animals {
         greet_dynamic(a.as_ref());
@@ -119,4 +119,4 @@ fn main() {
 }
 ```
 
-> Rule of thumb: reach for `impl Trait` / generics by default (faster, and errors show up at the call site). Reach for `dyn Trait` when you need a heterogeneous collection, or when the concrete type genuinely isn't known until runtime - e.g. plugins loaded by name.
+> Rule of thumb: reach for `impl Trait` and generics by default (faster, and errors show up at the call site). Reach for `dyn Trait` when you need a heterogeneous collection, or when the concrete type genuinely is not known until runtime such as plugins loaded by name.

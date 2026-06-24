@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HashMap &mdash; rustlearn</title>
+<title>HashMap | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -573,7 +573,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     scores.<span class="tk-fn">insert</span>(<span class="tk-st">&quot;Ashley&quot;</span>, <span class="tk-nm">69</span>);
     scores.<span class="tk-fn">insert</span>(<span class="tk-st">&quot;Katie&quot;</span>, <span class="tk-nm">58</span>);
 
-    <span class="tk-cm">// .get() returns Option&lt;&amp;V&gt; — there's no guarantee the key exists</span>
+    <span class="tk-cm">// .get() returns Option&lt;&amp;V&gt; because there is no guarantee the key exists</span>
     <span class="tk-kw">let</span> score = scores.<span class="tk-fn">get</span>(<span class="tk-st">&quot;Sunface&quot;</span>);
     <span class="tk-mc">assert_eq!</span>(score, <span class="tk-ty">Some</span>(<span class="tk-op">&amp;</span><span class="tk-nm">98</span>));
 
@@ -610,11 +610,11 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> <span class="tk-kw">mut</span> player_stats: <span class="tk-ty">HashMap</span>&lt;<span class="tk-op">&amp;</span><span class="tk-ty">str</span>, <span class="tk-ty">u8</span>&gt; = <span class="tk-ty">HashMap</span><span class="tk-op">::</span><span class="tk-fn">new</span>();
 
-    <span class="tk-cm">// Insert a default only if the key isn't already present.</span>
+    <span class="tk-cm">// Insert a default only if the key is not already present.</span>
     player_stats.<span class="tk-fn">entry</span>(<span class="tk-st">&quot;health&quot;</span>).<span class="tk-fn">or_insert</span>(<span class="tk-nm">100</span>);
     <span class="tk-mc">assert_eq!</span>(player_stats[<span class="tk-st">&quot;health&quot;</span>], <span class="tk-nm">100</span>);
 
-    <span class="tk-cm">// or_insert again — does nothing, since &quot;health&quot; already exists.</span>
+    <span class="tk-cm">// or_insert again does nothing, since &quot;health&quot; already exists.</span>
     player_stats.<span class="tk-fn">entry</span>(<span class="tk-st">&quot;health&quot;</span>).<span class="tk-fn">or_insert_with</span>(random_stat_buff);
     <span class="tk-mc">assert_eq!</span>(player_stats[<span class="tk-st">&quot;health&quot;</span>], <span class="tk-nm">100</span>);
 
@@ -629,7 +629,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-nm">42</span> <span class="tk-cm">// pretend this rolls a random buff</span>
 }</code></pre></div>
 <h2>Using a struct as a key</h2>
-<p>Any type used as a <code>HashMap</code> key must implement <code>Eq</code> and <code>Hash</code> (and <code>PartialEq</code>, which <code>Eq</code> requires) — <code>#[derive(...)]</code> handles this for you.</p>
+<p>Any type used as a <code>HashMap</code> key must implement <code>Eq</code> and <code>Hash</code> (and <code>PartialEq</code>, which <code>Eq</code> requires). The <code>#[derive(...)]</code> attribute handles this automatically.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>collections<span class="tk-op">::</span><span class="tk-ty">HashMap</span>;
 
 <span class="tk-at">#[derive(Debug, Hash, Eq, PartialEq)]</span>
@@ -662,7 +662,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="11-structs.html"><span class="dir">Next &rarr;</span>Sheet 11 &middot; Structs</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

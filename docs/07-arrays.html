@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Arrays &mdash; rustlearn</title>
+<title>Arrays | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,12 +563,12 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Collections &middot; Sheet 07 of 23</div>
   <h1>Arrays</h1>
   <div class="content">
-<p>An array has a <strong>fixed length, known at compile time</strong>, and lives on the stack (unless you put it behind a <code>Box</code> or inside something heap-allocated). All elements share the same type.</p>
+<p>An array has a <strong>fixed length known at compile time</strong> and lives on the stack (unless you put it behind a <code>Box</code> or inside something heap-allocated). All elements share the same type.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> arr: [<span class="tk-ty">i32</span>; <span class="tk-nm">5</span>] = [<span class="tk-nm">1</span>, <span class="tk-nm">2</span>, <span class="tk-nm">3</span>, <span class="tk-nm">4</span>, <span class="tk-nm">5</span>];
     <span class="tk-mc">assert_eq!</span>(arr.<span class="tk-fn">len</span>(), <span class="tk-nm">5</span>);
 
-    <span class="tk-kw">let</span> repeated: [<span class="tk-ty">i32</span>; <span class="tk-nm">100</span>] = [<span class="tk-nm">1</span>; <span class="tk-nm">100</span>]; <span class="tk-cm">// [1, 1, 1, ..., 1] — 100 elements</span>
+    <span class="tk-kw">let</span> repeated: [<span class="tk-ty">i32</span>; <span class="tk-nm">100</span>] = [<span class="tk-nm">1</span>; <span class="tk-nm">100</span>]; <span class="tk-cm">// [1, 1, 1, ..., 1] with 100 elements</span>
     <span class="tk-mc">assert_eq!</span>(repeated[<span class="tk-nm">0</span>], <span class="tk-nm">1</span>);
     <span class="tk-mc">assert_eq!</span>(repeated.<span class="tk-fn">len</span>(), <span class="tk-nm">100</span>);
 }</code></pre></div>
@@ -583,12 +583,12 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> arr = [<span class="tk-nm">10</span>, <span class="tk-nm">20</span>, <span class="tk-nm">30</span>];
 
-    <span class="tk-kw">let</span> third = arr[<span class="tk-nm">2</span>]; <span class="tk-cm">// panics here if index &gt;= len</span>
+    <span class="tk-kw">let</span> third = arr[<span class="tk-nm">2</span>]; <span class="tk-cm">// panics if index &gt;= len</span>
     <span class="tk-mc">assert_eq!</span>(third, <span class="tk-nm">30</span>);
 
     <span class="tk-kw">match</span> arr.<span class="tk-fn">get</span>(<span class="tk-nm">5</span>) {
         <span class="tk-ty">Some</span>(v) <span class="tk-op">=&gt;</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;found {v}&quot;</span>),
-        <span class="tk-ty">None</span> <span class="tk-op">=&gt;</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;index 5 is out of bounds — handled safely&quot;</span>),
+        <span class="tk-ty">None</span> <span class="tk-op">=&gt;</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;index 5 is out of bounds, handled safely&quot;</span>),
     }
 }</code></pre></div>
 
@@ -598,7 +598,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="08-vectors.html"><span class="dir">Next &rarr;</span>Sheet 08 &middot; Vectors</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crates and Modules &mdash; rustlearn</title>
+<title>Crates and Modules | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,7 +563,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Project Structure &middot; Sheet 19 of 23</div>
   <h1>Crates and Modules</h1>
   <div class="content">
-<p>A <strong>crate</strong> is the unit Rust compiles at once — either a <em>binary crate</em> (<code>src/main.rs</code>, produces an executable) or a <em>library crate</em> (<code>src/lib.rs</code>, produces something other crates can depend on). A <strong>module</strong> (<code>mod</code>) is how you organize code <em>within</em> a crate into a namespace tree.</p>
+<p>A <strong>crate</strong> is the unit Rust compiles at once. It is either a <em>binary crate</em> (<code>src/main.rs</code>, produces an executable) or a <em>library crate</em> (<code>src/lib.rs</code>, produces something other crates can depend on). A <strong>module</strong> (<code>mod</code>) is how you organize code within a crate into a namespace tree.</p>
 <h2>Modules, inline</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">mod</span> front_of_house {
     <span class="tk-kw">pub</span> <span class="tk-kw">mod</span> hosting {
@@ -573,7 +573,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     }
 
     <span class="tk-kw">mod</span> serving {
-        <span class="tk-cm">// private by default — only visible inside front_of_house</span>
+        <span class="tk-cm">// private by default, only visible inside front_of_house</span>
         <span class="tk-kw">fn</span> <span class="tk-fn">take_order</span>() {
             <span class="tk-mc">println!</span>(<span class="tk-st">&quot;order taken&quot;</span>);
         }
@@ -584,19 +584,19 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-cm">// Absolute path, starting from the crate root:</span>
     <span class="tk-kw">crate</span><span class="tk-op">::</span>front_of_house<span class="tk-op">::</span>hosting<span class="tk-op">::</span><span class="tk-fn">add_to_waitlist</span>();
 
-    <span class="tk-cm">// Relative path also works here, since we're at the crate root:</span>
+    <span class="tk-cm">// Relative path also works here, since we are at the crate root:</span>
     front_of_house<span class="tk-op">::</span>hosting<span class="tk-op">::</span><span class="tk-fn">add_to_waitlist</span>();
 }</code></pre></div>
 <h2>Everything is private unless marked <code>pub</code></h2>
-<p>This is the default that makes Rust's module system useful as actual encapsulation, not just file organization: a function, struct field, or module is invisible outside its parent module until you explicitly say otherwise.</p>
+<p>This is the default that makes Rust's module system useful as actual encapsulation, not just file organization. A function, struct field, or module is invisible outside its parent module until you explicitly say otherwise.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">mod</span> front_of_house {
     <span class="tk-kw">pub</span> <span class="tk-kw">mod</span> hosting {
         <span class="tk-kw">pub</span> <span class="tk-kw">fn</span> <span class="tk-fn">add_to_waitlist</span>() {}
     }
 }
 
-<span class="tk-cm">// mod is itself private by default too — without `pub mod hosting` above,</span>
-<span class="tk-cm">// the line below wouldn't compile, even though add_to_waitlist is pub:</span>
+<span class="tk-cm">// Without `pub mod hosting` above, the line below would not compile,</span>
+<span class="tk-cm">// even though add_to_waitlist is pub:</span>
 <span class="tk-cm">// error[E0603]: module `hosting` is private</span>
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     front_of_house<span class="tk-op">::</span>hosting<span class="tk-op">::</span><span class="tk-fn">add_to_waitlist</span>();
@@ -616,17 +616,16 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     hosting<span class="tk-op">::</span><span class="tk-fn">add_to_waitlist</span>(); <span class="tk-cm">// shortcut, instead of the full path</span>
 }</code></pre></div>
-<blockquote><p>Convention: <code>use</code> a function's <em>parent module</em> (<code>hosting::add_to_waitlist()</code>), not the function itself — that keeps the call site clear about where the function comes from. For structs, enums, and traits, the opposite convention applies: <code>use</code> the type itself directly (e.g. <code>use std::collections::HashMap;</code>, then just write <code>HashMap::new()</code>).</p></blockquote>
+<blockquote><p>Convention: <code>use</code> a function's parent module (<code>hosting::add_to_waitlist()</code>), not the function itself. That keeps the call site clear about where the function comes from. For structs, enums, and traits, the opposite convention applies: <code>use</code> the type itself directly (e.g. <code>use std::collections::HashMap;</code>, then just write <code>HashMap::new()</code>).</p></blockquote>
 <h2>Splitting modules across files</h2>
-<p>The examples above use <code>mod front_of_house { ... }</code> with the body inline, but in a real project each module typically gets its own file. Writing <code>mod front_of_house;</code> (note: no body, just a semicolon) tells Rust &quot;load this module's contents from a file&quot;:</p>
+<p>The examples above use <code>mod front_of_house { ... }</code> with the body inline, but in a real project each module typically gets its own file. Writing <code>mod front_of_house;</code> with no body, just a semicolon, tells Rust to load this module's contents from a file:</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">text</span></div><pre><code>src/
 ├── main.rs            // contains: mod front_of_house;
 ├── front_of_house.rs   // contents of the front_of_house module
 └── front_of_house/
     └── hosting.rs       // contents of front_of_house::hosting</code></pre></div>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// src/main.rs</span>
-<span class="tk-kw">mod</span> front_of_house; <span class="tk-cm">// Rust looks for ./front_of_house.rs (or</span>
-                     <span class="tk-cm">// ./front_of_house/mod.rs in the older style)</span>
+<span class="tk-kw">mod</span> front_of_house; <span class="tk-cm">// Rust looks for ./front_of_house.rs</span>
 
 <span class="tk-kw">use</span> front_of_house<span class="tk-op">::</span>hosting;
 
@@ -640,7 +639,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;waitlisted&quot;</span>);
 }</code></pre></div>
 <h2>Re-exporting with <code>pub use</code></h2>
-<p><code>pub use</code> re-exports a path under the current module, so callers don't need to know your internal structure to reach it.</p>
+<p><code>pub use</code> re-exports a path under the current module, so callers do not need to know your internal structure to reach it.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">mod</span> front_of_house {
     <span class="tk-kw">pub</span> <span class="tk-kw">mod</span> hosting {
         <span class="tk-kw">pub</span> <span class="tk-kw">fn</span> <span class="tk-fn">add_to_waitlist</span>() {}
@@ -661,7 +660,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">text</span></div><pre><code>[dependencies]
 serde = &quot;1.0&quot;
 rand = &quot;0.8&quot;</code></pre></div>
-<p>Since the 2018 edition, you don't need <code>extern crate</code> to use them — <code>use</code> alone is enough:</p>
+<p>Since the 2018 edition, you do not need <code>extern crate</code> to use them. <code>use</code> alone is enough:</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">text</span></div><pre><code>use rand::Rng;
 
 fn roll() -&gt; u32 {
@@ -674,7 +673,7 @@ fn roll() -&gt; u32 {
     <a class="next" href="20-result-and-panic.html"><span class="dir">Next &rarr;</span>Sheet 20 &middot; Result and Panic</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

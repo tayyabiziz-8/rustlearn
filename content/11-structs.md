@@ -55,7 +55,7 @@ fn main() {
 
 ## Tuple structs
 
-A tuple struct has a name but unnamed, positional fields - useful for giving a tuple shape a distinct type.
+A tuple struct has a name but unnamed, positional fields. Useful for giving a tuple shape a distinct type.
 
 ```rust
 struct Point(i32, i32, i32);
@@ -75,7 +75,7 @@ fn check_color(p: Point) {
 
 ## Partial moves
 
-Destructuring a struct can move *some* fields out while leaving others behind, as long as the remaining fields are only borrowed (`ref`) or are themselves `Copy`.
+Destructuring a struct can move *some* fields out while leaving others behind, as long as the remaining fields are only borrowed (via `ref`) or are themselves `Copy`.
 
 ```rust
 #[derive(Debug)]
@@ -96,8 +96,8 @@ fn main() {
     println!("age: {age}");
     println!("name: {name}");
 
-    // person as a whole is now partially moved - person.name is gone -
-    // but the still-valid field can still be reached through it:
+    // person as a whole is now partially moved, but the still-valid
+    // field can still be reached through it:
     println!("age via person: {}", person.age);
 
     // println!("{person:?}"); // compile error: partially moved value

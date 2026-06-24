@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Strings & Slices &mdash; rustlearn</title>
+<title>Strings & Slices | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,11 +563,11 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Ownership & Borrowing &middot; Sheet 06 of 23</div>
   <h1>Strings & Slices</h1>
   <div class="content">
-<p>Three things in Rust are all &quot;string-shaped,&quot; and they're easy to confuse at first:</p>
+<p>Three things in Rust are all string-shaped, and they are easy to confuse at first:</p>
 <ul>
-<li><strong><code>String</code></strong> — heap-allocated, owns its data, growable, mutable.</li>
-<li><strong><code>&amp;str</code></strong> (&quot;string slice&quot;) — a <em>view</em> into UTF-8 bytes somewhere else; it doesn't own the data.</li>
-<li><strong>String literal</strong> (<code>&quot;hello&quot;</code>) — baked into the binary; its type is <code>&amp;'static str</code>, a string slice.</li>
+<li><strong><code>String</code></strong> is heap-allocated, owns its data, growable, and mutable.</li>
+<li><strong><code>&amp;str</code></strong> (called a string slice) is a view into UTF-8 bytes somewhere else. It does not own the data.</li>
+<li><strong>String literals</strong> like <code>&quot;hello&quot;</code> are baked into the binary. Their type is <code>&amp;'static str</code>, a string slice that lives for the entire program.</li>
 </ul>
 <h2>Slicing a String</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
@@ -577,7 +577,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(hello, <span class="tk-st">&quot;hello&quot;</span>);
     <span class="tk-mc">assert_eq!</span>(world, <span class="tk-st">&quot;world&quot;</span>);
 }</code></pre></div>
-<p><code>&amp;String</code> slices to <code>&amp;str</code> automatically wherever a <code>&amp;str</code> is expected — this is called <strong>deref coercion</strong>.</p>
+<p><code>&amp;String</code> slices to <code>&amp;str</code> automatically wherever a <code>&amp;str</code> is expected. This is called <strong>deref coercion</strong>.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">first_word</span>(s: <span class="tk-op">&amp;</span><span class="tk-ty">str</span>) <span class="tk-op">-&gt;</span> <span class="tk-op">&amp;</span><span class="tk-ty">str</span> {
     <span class="tk-op">&amp;</span>s[<span class="tk-op">..</span><span class="tk-nm">1</span>]
 }
@@ -587,9 +587,9 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> first = <span class="tk-fn">first_word</span>(<span class="tk-op">&amp;</span>s); <span class="tk-cm">// &amp;String coerces to &amp;str here</span>
     <span class="tk-mc">assert_eq!</span>(first, <span class="tk-st">&quot;h&quot;</span>);
 }</code></pre></div>
-<blockquote><p>Slices borrow from their source. If you call <code>.clear()</code> on the original <code>String</code> while a slice into it is still alive, that's a compile error — the slice would otherwise point at memory that's about to be wiped.</p></blockquote>
+<blockquote><p>Slices borrow from their source. If you call <code>.clear()</code> on the original <code>String</code> while a slice into it is still alive, that is a compile error. The slice would otherwise point at memory that is about to be wiped.</p></blockquote>
 <h2>UTF-8: indexing is by byte, not by character</h2>
-<p>A Rust <code>String</code> is UTF-8 bytes under the hood. ASCII characters take 1 byte; many others take more — so slicing at the wrong boundary panics.</p>
+<p>A Rust <code>String</code> is UTF-8 bytes under the hood. ASCII characters take 1 byte but many others take more, so slicing at the wrong boundary panics.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello, 世界&quot;</span>);
 
@@ -600,7 +600,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> world_char = <span class="tk-op">&amp;</span>s[<span class="tk-nm">7</span><span class="tk-op">..</span><span class="tk-nm">10</span>];
     <span class="tk-mc">assert_eq!</span>(world_char, <span class="tk-st">&quot;世&quot;</span>);
 
-    <span class="tk-cm">// Always iterate by character, not by raw byte index, when you're</span>
+    <span class="tk-cm">// Always iterate by character, not by raw byte index, when you are</span>
     <span class="tk-cm">// not sure of the boundaries:</span>
     <span class="tk-kw">for</span> (i, c) <span class="tk-kw">in</span> s.<span class="tk-fn">chars</span>().<span class="tk-fn">enumerate</span>() {
         <span class="tk-kw">if</span> c <span class="tk-op">==</span> <span class="tk-st">'世'</span> {
@@ -613,7 +613,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> <span class="tk-kw">mut</span> s = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">with_capacity</span>(<span class="tk-nm">25</span>); <span class="tk-cm">// pre-allocate to avoid repeated reallocation</span>
     s.<span class="tk-fn">push</span>(<span class="tk-st">','</span>); <span class="tk-cm">// single char</span>
     s.<span class="tk-fn">push_str</span>(<span class="tk-st">&quot; world&quot;</span>); <span class="tk-cm">// a &amp;str</span>
-    s += <span class="tk-st">&quot;!&quot;</span>; <span class="tk-cm">// shorthand for push_str, via the Add trait</span>
+    s += <span class="tk-st">&quot;!&quot;</span>; <span class="tk-cm">// shorthand for push_str via the Add trait</span>
 
     <span class="tk-mc">assert_eq!</span>(s, <span class="tk-st">&quot;, world!&quot;</span>);
 }</code></pre></div>
@@ -622,7 +622,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> s2 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;world!&quot;</span>);
 
     <span class="tk-cm">// `+` calls a method roughly shaped like `fn add(self, other: &amp;str) -&gt; String`.</span>
-    <span class="tk-cm">// It takes `self` by value, so s1 is MOVED here and can't be used afterward.</span>
+    <span class="tk-cm">// It takes `self` by value, so s1 is MOVED here and cannot be used afterward.</span>
     <span class="tk-kw">let</span> s3 = s1 + <span class="tk-op">&amp;</span>s2;
 
     <span class="tk-mc">assert_eq!</span>(s3, <span class="tk-st">&quot;hello, world!&quot;</span>);
@@ -632,7 +632,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
 
-    <span class="tk-kw">let</span> bytes_view: <span class="tk-op">&amp;</span>[<span class="tk-ty">u8</span>] = s.<span class="tk-fn">as_bytes</span>(); <span class="tk-cm">// borrows — s is still usable</span>
+    <span class="tk-kw">let</span> bytes_view: <span class="tk-op">&amp;</span>[<span class="tk-ty">u8</span>] = s.<span class="tk-fn">as_bytes</span>(); <span class="tk-cm">// borrows, s is still usable</span>
     <span class="tk-mc">assert_eq!</span>(bytes_view, b<span class="tk-st">&quot;hello&quot;</span>);
 
     <span class="tk-kw">let</span> bytes_owned: <span class="tk-ty">Vec</span>&lt;<span class="tk-ty">u8</span>&gt; = s.<span class="tk-fn">into_bytes</span>(); <span class="tk-cm">// consumes s, returns owned Vec&lt;u8&gt;</span>
@@ -645,7 +645,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="07-arrays.html"><span class="dir">Next &rarr;</span>Sheet 07 &middot; Arrays</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

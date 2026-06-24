@@ -152,7 +152,7 @@ fn page_shell(title: &str, sidebar_html: &str, main_html: &str) -> String {
     out.push_str(sidebar_html);
     out.push_str("<main id=\"main\" class=\"main\">\n");
     out.push_str(main_html);
-    out.push_str("\n<footer class=\"site-footer\">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>\n");
+    out.push_str("\n<footer class=\"site-footer\">built with a hand-rolled Rust static site generator. No JS required.</footer>\n");
     out.push_str("</main>\n</div>\n</body>\n</html>\n");
     out
 }
@@ -164,7 +164,7 @@ fn ownership_diagram_svg() -> &'static str {
       <path d="M0,0 L7,3 L0,6 Z" fill="#3E8E86"/>
     </marker>
   </defs>
-  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="2" fill="#7E96A3">SHEET — OWNERSHIP MODEL</text>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="2" fill="#7E96A3">SHEET: OWNERSHIP MODEL</text>
 
   <rect x="20" y="50" width="150" height="120" rx="3" fill="none" stroke="#3E8E86" stroke-width="1.4"/>
   <text x="34" y="44" font-family="JetBrains Mono, monospace" font-size="11" fill="#D79A4C">STACK</text>
@@ -199,7 +199,7 @@ fn ownership_diagram_svg() -> &'static str {
   </g>
 
   <text x="20" y="210" font-family="JetBrains Mono, monospace" font-size="11" fill="#7E96A3">let s1 = String::from("hello");</text>
-  <text x="20" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#7E96A3">let s2 = s1;  // move — s1 no longer valid</text>
+  <text x="20" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#7E96A3">let s2 = s1;  // move: s1 no longer valid</text>
 
   <rect x="20" y="250" width="150" height="60" rx="3" fill="none" stroke="#46606b" stroke-width="1.2" stroke-dasharray="3 3"/>
   <text x="34" y="244" font-family="JetBrains Mono, monospace" font-size="11" fill="#46606b">s1 (moved)</text>
@@ -246,7 +246,7 @@ fn render_home(chapters: &[Chapter]) -> String {
   <div>
     <div class="hero-eyebrow">A field guide, not a wiki dump</div>
     <h1>Learn Rust the way the<br><span class="accent">borrow checker</span> thinks.</h1>
-    <p>23 short, dense chapters built from real study notes — ownership, borrowing, generics, error handling, smart pointers, and async — every example fully worked so there's no ambiguity about what it does.</p>
+    <p>23 short, dense chapters built from real study notes covering ownership, borrowing, generics, error handling, smart pointers, and async. Every example is fully worked so there is no ambiguity about what it does.</p>
     <a class="hero-cta" href="{first_slug}.html">Start at Sheet 01 &rarr;</a>
   </div>
   {diagram}
@@ -308,7 +308,7 @@ fn render_chapter(chapters: &[Chapter], idx: usize) -> String {
         next = next
     );
 
-    page_shell(&format!("{} &mdash; rustlearn", ch.title), &sidebar, &main_html)
+    page_shell(&format!("{} | rustlearn", ch.title), &sidebar, &main_html)
 }
 
 fn main() {

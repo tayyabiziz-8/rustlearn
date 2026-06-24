@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pattern Matching &mdash; rustlearn</title>
+<title>Pattern Matching | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -564,7 +564,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <h1>Pattern Matching</h1>
   <div class="content">
 <h2>match</h2>
-<p><code>match</code> compares a value against a series of patterns and runs the code for the first one that fits. It's <strong>exhaustive</strong> — the compiler refuses to build unless every possible case is handled, which is what makes it safer than a chain of <code>if/else if</code>.</p>
+<p><code>match</code> compares a value against a series of patterns and runs the code for the first one that fits. It is <strong>exhaustive</strong>: the compiler refuses to build unless every possible case is handled, which is what makes it safer than a chain of <code>if/else if</code>.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">enum</span> <span class="tk-ty">Direction</span> {
     <span class="tk-ty">East</span>,
     <span class="tk-ty">West</span>,
@@ -577,7 +577,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 
     <span class="tk-kw">match</span> dir {
         <span class="tk-ty">Direction</span><span class="tk-op">::</span><span class="tk-ty">East</span> <span class="tk-op">=&gt;</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;East&quot;</span>),
-        <span class="tk-ty">Direction</span><span class="tk-op">::</span><span class="tk-ty">South</span> | <span class="tk-ty">Direction</span><span class="tk-op">::</span><span class="tk-ty">North</span> <span class="tk-op">=&gt;</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;South or North&quot;</span>), <span class="tk-cm">// matches either</span>
+        <span class="tk-ty">Direction</span><span class="tk-op">::</span><span class="tk-ty">South</span> | <span class="tk-ty">Direction</span><span class="tk-op">::</span><span class="tk-ty">North</span> <span class="tk-op">=&gt;</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;South or North&quot;</span>),
         _ <span class="tk-op">=&gt;</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;West&quot;</span>), <span class="tk-cm">// catch-all for anything not named above</span>
     }
 }</code></pre></div>
@@ -594,7 +594,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <p>When you only care about a single pattern and want to ignore everything else, <code>if let</code> is less boilerplate than a <code>match</code> with a <code>_</code> arm.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">enum</span> <span class="tk-ty">Coin</span> {
     <span class="tk-ty">Penny</span>,
-    <span class="tk-ty">Quarter</span>(<span class="tk-ty">u8</span>), <span class="tk-cm">// carries a &quot;state code&quot; or similar</span>
+    <span class="tk-ty">Quarter</span>(<span class="tk-ty">u8</span>),
 }
 
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
@@ -614,7 +614,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
         <span class="tk-mc">assert!</span>(<span class="tk-mc">matches!</span>(ab, <span class="tk-st">'A'</span><span class="tk-op">..=</span><span class="tk-st">'Z'</span> | <span class="tk-st">'a'</span><span class="tk-op">..=</span><span class="tk-st">'z'</span> | <span class="tk-st">'0'</span><span class="tk-op">..=</span><span class="tk-st">'9'</span>));
     }
 }</code></pre></div>
-<h2>Binding with @, and matching ranges inside a struct</h2>
+<h2>Binding with @ and matching ranges inside a struct</h2>
 <p><code>name @ pattern</code> lets you test a value against a pattern <em>and</em> capture it into <code>name</code> at the same time.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Point</span> {
     x: <span class="tk-ty">i32</span>,
@@ -650,7 +650,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="14-methods.html"><span class="dir">Next &rarr;</span>Sheet 14 &middot; Methods & Associated Functions</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Generics &mdash; rustlearn</title>
+<title>Generics | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,7 +563,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Generics & Abstraction &middot; Sheet 15 of 23</div>
   <h1>Generics</h1>
   <div class="content">
-<p>Generics let you write a struct, enum, or function once and have it work for many concrete types — the compiler generates a specialized version for each type actually used (called <em>monomorphization</em>), so there's no runtime overhead compared to writing it by hand for each type.</p>
+<p>Generics let you write a struct, enum, or function once and have it work for many concrete types. The compiler generates a specialized version for each type actually used (called <em>monomorphization</em>), so there is no runtime overhead compared to writing it by hand for each type.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Point</span>&lt;<span class="tk-ty">T</span>, <span class="tk-ty">U</span>&gt; {
     x: <span class="tk-ty">T</span>,
     y: <span class="tk-ty">U</span>,
@@ -614,7 +614,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(p3.y, <span class="tk-st">'中'</span>);
 }</code></pre></div>
 <h2>Bounding what a generic type can do</h2>
-<p>Without constraints, a generic <code>T</code> could be anything — so the compiler won't let you call methods on it. A <strong>trait bound</strong> (covered in full in <a href="16-traits.html">Traits</a>) says &quot;T must support this behavior.&quot;</p>
+<p>Without constraints, a generic <code>T</code> could be anything, so the compiler will not let you call methods on it. A <strong>trait bound</strong> (covered in full in <a href="16-traits.html">Traits</a>) says &quot;T must support this behavior.&quot;</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>fmt<span class="tk-op">::</span><span class="tk-ty">Display</span>;
 
 <span class="tk-kw">fn</span> print_twice&lt;<span class="tk-ty">T</span>: <span class="tk-ty">Display</span>&gt;(value: <span class="tk-ty">T</span>) {
@@ -633,7 +633,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="16-traits.html"><span class="dir">Next &rarr;</span>Sheet 16 &middot; Traits</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

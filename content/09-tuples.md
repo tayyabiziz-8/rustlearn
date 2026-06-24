@@ -1,7 +1,7 @@
 # Tuples
 desc: Fixed-size, heterogeneous groupings, accessed by position.
 
-A tuple groups a fixed number of values, which can each be a *different* type. Access fields with `.0`, `.1`, etc., or destructure them by pattern.
+A tuple groups a fixed number of values that can each be a *different* type. Access fields with `.0`, `.1`, etc., or destructure them by pattern.
 
 ```rust
 fn main() {
@@ -25,4 +25,4 @@ fn main() {
 }
 ```
 
-> The `println!("{t:?}")` form above needs the `Debug` trait, which tuples implement automatically as long as every element does. Tuples longer than 12 elements lose this automatic `Debug`/`PartialEq` support - past that point, reach for a named `struct` instead.
+> The `println!("{t:?}")` form above needs the `Debug` trait, which tuples implement automatically as long as every element does. Tuples longer than 12 elements lose this automatic `Debug` and `PartialEq` support. Past that point, reach for a named `struct` instead.

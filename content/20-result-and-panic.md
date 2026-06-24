@@ -1,10 +1,10 @@
 # Result and Panic
 desc: Recoverable errors with Result<T, E>, the ? operator, and when panic! is actually the right call.
 
-Rust splits errors into two categories, and treats them very differently:
+Rust splits errors into two categories and treats them very differently:
 
-- **Unrecoverable** - `panic!`. The program prints an error and unwinds (or aborts), with no path back. Reserved for bugs and states the program genuinely can't continue from.
-- **Recoverable** - `Result<T, E>`. An ordinary value the caller is *expected* to handle. This is the normal way to signal "this operation might not work," and the compiler won't let you silently ignore it.
+- **Unrecoverable** errors use `panic!`. The program prints an error and unwinds (or aborts), with no path back. Reserved for bugs and states the program genuinely cannot continue from.
+- **Recoverable** errors use `Result<T, E>`. This is an ordinary value the caller is *expected* to handle. It is the normal way to signal "this operation might not work," and the compiler will not let you silently ignore it.
 
 ## panic!
 
@@ -21,7 +21,7 @@ fn main() {
 }
 ```
 
-`unimplemented!()` and `todo!()` are both shorthand for "panic with a message saying this isn't done yet" - useful as placeholders while you're sketching out a design.
+`unimplemented!()` and `todo!()` are both shorthand for panicking with a message saying this is not done yet. Useful as placeholders while sketching out a design.
 
 ## `Result<T, E>`
 
@@ -56,7 +56,7 @@ fn main() {
 
 ## `unwrap` and `expect`: opting back into panicking
 
-Sometimes you genuinely know a `Result` will be `Ok` - or you're prototyping and don't want to handle the error path yet. `.unwrap()` returns the `Ok` value or panics; `.expect(msg)` does the same but with a custom panic message, which makes debugging far easier than a bare `unwrap()`.
+Sometimes you genuinely know a `Result` will be `Ok`, or you are prototyping and do not want to handle the error path yet. `.unwrap()` returns the `Ok` value or panics. `.expect(msg)` does the same but with a custom panic message, which makes debugging far easier than a bare `unwrap()`.
 
 ```rust
 fn main() {
@@ -71,11 +71,11 @@ fn main() {
 }
 ```
 
-> Reach for `unwrap`/`expect` in examples, tests, and quick scripts - and in production code only when a failure there genuinely represents a bug, not an expected condition (a config file that must exist, an invariant you've already checked). Otherwise, propagate the error instead.
+> Reach for `unwrap` and `expect` in examples, tests, and quick scripts, and in production code only when a failure there genuinely represents a bug rather than an expected condition. Otherwise, propagate the error instead.
 
 ## The `?` operator: propagating errors without the boilerplate
 
-`?` on a `Result` does one of two things: if it's `Ok(value)`, it unwraps to `value` and keeps going; if it's `Err(e)`, it immediately returns that error from the *enclosing function* (converting it with `From`, if the error types differ). This replaces a `match` that would otherwise show up after every fallible call.
+`?` on a `Result` does one of two things. If it is `Ok(value)`, it unwraps to `value` and keeps going. If it is `Err(e)`, it immediately returns that error from the enclosing function, converting it with `From` if the error types differ. This replaces a `match` that would otherwise show up after every fallible call.
 
 ```rust
 use std::num::ParseIntError;
@@ -143,7 +143,7 @@ fn parse_positive(s: &str) -> Result<i32, AppError> {
     if s.is_empty() {
         return Err(AppError::EmptyInput);
     }
-    let n: i32 = s.parse()?; // ParseIntError -> AppError, automatically
+    let n: i32 = s.parse()?; // ParseIntError converts to AppError automatically
     Ok(n.abs())
 }
 
@@ -154,4 +154,4 @@ fn main() {
 }
 ```
 
-> `main` itself can return a `Result` - write `fn main() -> Result<(), AppError>` and use `?` directly in `main`. If it returns `Err`, the process exits with a non-zero status and prints the error via `Debug`.
+> `main` itself can return a `Result`. Write `fn main() -> Result<(), AppError>` and use `?` directly in `main`. If it returns `Err`, the process exits with a non-zero status and prints the error via `Debug`.

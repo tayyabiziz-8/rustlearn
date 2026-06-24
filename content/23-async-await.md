@@ -1,20 +1,20 @@
 # Async / Await
 desc: Futures, the async/await syntax, and why Rust async needs an executor to actually run.
 
-Rust's async model is built on **futures** - values that represent a computation that hasn't completed yet. They're pure data structures until something (an **executor**) actually drives them to completion. The `async`/`await` syntax is how you write that logic without manually implementing the `Future` trait.
+Rust's async model is built on **futures**, which are values that represent a computation that has not completed yet. They are pure data structures until something called an **executor** actually drives them to completion. The `async`/`await` syntax is how you write that logic without manually implementing the `Future` trait.
 
 ## The mental model: poll-based, not callback-based
 
-Unlike Node.js callbacks or Python coroutines, Rust futures don't run until they're *polled*. An executor (from a runtime like Tokio or async-std) manages a queue of futures and calls `.poll()` on each one repeatedly until it's done. If a future isn't ready (e.g., waiting for a socket), it returns `Poll::Pending` and registers a **waker** so the executor can re-poll it when the data arrives.
+Unlike Node.js callbacks or Python coroutines, Rust futures do not run until they are *polled*. An executor (from a runtime like Tokio or async-std) manages a queue of futures and calls `.poll()` on each one repeatedly until it is done. If a future is not ready (e.g., waiting for a socket), it returns `Poll::Pending` and registers a **waker** so the executor can re-poll it when the data arrives.
 
-This means a future that you create but never `await` (and never pass to an executor) does *nothing*. There's no implicit runtime.
+This means a future that you create but never `await` (and never pass to an executor) does *nothing*. There is no implicit runtime.
 
 ## `async fn`: a function that returns a Future
 
 ```rust
 // `async fn` transforms the return type from `T` into `impl Future<Output = T>`.
-// The body doesn't run immediately when the function is called -
-// it runs when the returned future is awaited.
+// The body does not run immediately when the function is called.
+// It runs when the returned future is awaited.
 async fn say_hello() -> String {
     String::from("hello from async")
 }
@@ -29,7 +29,7 @@ async fn greet() {
 
 ## You need an executor to run async code
 
-Rust's standard library defines `Future` but ships **no** async executor. You bring one in as a dependency. The two most common are **Tokio** and **async-std**. The `#[tokio::main]` macro wraps your `async fn main` so there's an executor running before any `await` is reached.
+Rust's standard library defines `Future` but ships no async executor. You bring one in as a dependency. The two most common are **Tokio** and **async-std**. The `#[tokio::main]` macro wraps your `async fn main` so there is an executor running before any `await` is reached.
 
 ```rust
 // In Cargo.toml:
@@ -45,14 +45,14 @@ async fn main() {
 async fn fetch_data() -> String {
     // In real code this would be a network call, file read, etc.
     // tokio::time::sleep, reqwest::get(), tokio::fs::read_to_string()
-    // all return futures you'd .await here.
+    // all return futures you would .await here.
     String::from("some data")
 }
 ```
 
 ## Running two futures concurrently with `tokio::join!`
 
-`.await` on a single future is sequential - the next line doesn't start until the first one finishes. To run two futures at the *same time* and wait for both, use `join!`:
+`.await` on a single future is sequential. The next line does not start until the first one finishes. To run two futures at the same time and wait for both, use `join!`:
 
 ```rust
 use std::time::Duration;
@@ -71,7 +71,7 @@ async fn task_b() -> &'static str {
 #[tokio::main]
 async fn main() {
     // Both tasks start immediately and run concurrently on the same thread.
-    // Total wall time ≈ 200ms, not 300ms.
+    // Total wall time is roughly 200ms, not 300ms.
     let (a, b) = tokio::join!(task_a(), task_b());
     println!("{a}, {b}");
 }
@@ -79,7 +79,7 @@ async fn main() {
 
 ## Spawning a background task with `tokio::spawn`
 
-`join!` waits for both futures in the current task. `spawn` schedules a future as an independent task - it can run on a different thread entirely, and you hold a `JoinHandle` to collect the result later.
+`join!` waits for both futures in the current task. `spawn` schedules a future as an independent task that can run on a different thread entirely, and you hold a `JoinHandle` to collect the result later.
 
 ```rust
 #[tokio::main]
@@ -96,7 +96,7 @@ async fn main() {
 
 ## `async` blocks
 
-You don't need a full `async fn` - any block can be made into a future with `async { ... }`. Useful for capturing variables into a future inline.
+You do not need a full `async fn`. Any block can be made into a future with `async { ... }`. Useful for capturing variables into a future inline.
 
 ```rust
 #[tokio::main]
@@ -115,7 +115,7 @@ async fn main() {
 
 ## Why `async` trait methods need extra care
 
-Async functions in traits aren't directly supported in stable Rust before 1.75 without the `async-trait` crate, because `async fn` desugars to returning `impl Future`, and trait methods can't return `impl Trait` in a stable, object-safe way (yet). From Rust 1.75 onward, `async fn` in traits is stable for many use cases.
+Async functions in traits are not directly supported in stable Rust before 1.75 without the `async-trait` crate, because `async fn` desugars to returning `impl Future`, and trait methods cannot return `impl Trait` in a stable, object-safe way without explicit support. From Rust 1.75 onward, `async fn` in traits is stable for many use cases.
 
 ```rust
 // Rust 1.75+ stable approach:
@@ -135,7 +135,7 @@ impl Downloader for HttpDownloader {
 ## The key facts, in one place
 
 - `async fn foo() -> T` actually returns `impl Future<Output = T>`. The body is a state machine generated by the compiler.
-- `.await` suspends the *current* future and hands control back to the executor until the inner future is ready.
+- `.await` suspends the current future and hands control back to the executor until the inner future is ready.
 - Nothing runs until an executor polls it. There is no implicit thread or timer.
 - Concurrency: use `join!` (or `select!`) to drive multiple futures simultaneously on one task. Use `spawn` to put work on a separate task (possibly a separate thread in a multi-threaded runtime).
-- Sending futures across threads requires they are `Send` - this means their captured variables must also be `Send`. `Rc<T>` and `RefCell<T>` are not `Send`; `Arc<T>` and `Mutex<T>` are.
+- Sending futures across threads requires they are `Send`. This means their captured variables must also be `Send`. `Rc<T>` and `RefCell<T>` are not `Send`; `Arc<T>` and `Mutex<T>` are.

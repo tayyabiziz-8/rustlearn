@@ -563,7 +563,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div>
     <div class="hero-eyebrow">A field guide, not a wiki dump</div>
     <h1>Learn Rust the way the<br><span class="accent">borrow checker</span> thinks.</h1>
-    <p>23 short, dense chapters built from real study notes — ownership, borrowing, generics, error handling, smart pointers, and async — every example fully worked so there's no ambiguity about what it does.</p>
+    <p>23 short, dense chapters built from real study notes covering ownership, borrowing, generics, error handling, smart pointers, and async. Every example is fully worked so there is no ambiguity about what it does.</p>
     <a class="hero-cta" href="01-variables.html">Start at Sheet 01 &rarr;</a>
   </div>
   <svg class="hero-diagram" viewBox="0 0 460 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of a String value: a stack record holding pointer, length, and capacity, pointing to heap-allocated bytes">
@@ -572,7 +572,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
       <path d="M0,0 L7,3 L0,6 Z" fill="#3E8E86"/>
     </marker>
   </defs>
-  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="2" fill="#7E96A3">SHEET — OWNERSHIP MODEL</text>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="2" fill="#7E96A3">SHEET: OWNERSHIP MODEL</text>
 
   <rect x="20" y="50" width="150" height="120" rx="3" fill="none" stroke="#3E8E86" stroke-width="1.4"/>
   <text x="34" y="44" font-family="JetBrains Mono, monospace" font-size="11" fill="#D79A4C">STACK</text>
@@ -607,7 +607,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   </g>
 
   <text x="20" y="210" font-family="JetBrains Mono, monospace" font-size="11" fill="#7E96A3">let s1 = String::from("hello");</text>
-  <text x="20" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#7E96A3">let s2 = s1;  // move — s1 no longer valid</text>
+  <text x="20" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#7E96A3">let s2 = s1;  // move: s1 no longer valid</text>
 
   <rect x="20" y="250" width="150" height="60" rx="3" fill="none" stroke="#46606b" stroke-width="1.2" stroke-dasharray="3 3"/>
   <text x="34" y="244" font-family="JetBrains Mono, monospace" font-size="11" fill="#46606b">s1 (moved)</text>
@@ -626,19 +626,19 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <a class="chapter-card" href="03-functions.html"><div class="num">SHEET 03</div><div class="title">Functions</div><div class="desc">Declaring functions, parameters, return types, and the implicit-return rule.</div></a>
 </div></div>
 <div class="section-block"><h2>Ownership & Borrowing</h2><div class="card-grid">
-<a class="chapter-card" href="04-ownership.html"><div class="num">SHEET 04</div><div class="title">Ownership</div><div class="desc">Rust's compile-time memory model — the rule set that replaces a garbage collector.</div></a>
+<a class="chapter-card" href="04-ownership.html"><div class="num">SHEET 04</div><div class="title">Ownership</div><div class="desc">Rust's compile-time memory model, the rule set that replaces a garbage collector.</div></a>
 <a class="chapter-card" href="05-references-and-borrowing.html"><div class="num">SHEET 05</div><div class="title">References & Borrowing</div><div class="desc">Accessing data without taking ownership, and the rules that make it safe.</div></a>
 <a class="chapter-card" href="06-strings-and-slices.html"><div class="num">SHEET 06</div><div class="title">Strings & Slices</div><div class="desc">String vs &str vs string literal, UTF-8 byte indexing, and building/growing strings.</div></a>
 </div></div>
 <div class="section-block"><h2>Collections</h2><div class="card-grid">
 <a class="chapter-card" href="07-arrays.html"><div class="num">SHEET 07</div><div class="title">Arrays</div><div class="desc">Fixed-size, stack-allocated collections, and safe vs. unsafe indexing.</div></a>
-<a class="chapter-card" href="08-vectors.html"><div class="num">SHEET 08</div><div class="title">Vectors</div><div class="desc">Dynamically-sized, heap-allocated, growable lists — and the conversions in and out of them.</div></a>
+<a class="chapter-card" href="08-vectors.html"><div class="num">SHEET 08</div><div class="title">Vectors</div><div class="desc">Dynamically-sized, heap-allocated, growable lists and the conversions in and out of them.</div></a>
 <a class="chapter-card" href="09-tuples.html"><div class="num">SHEET 09</div><div class="title">Tuples</div><div class="desc">Fixed-size, heterogeneous groupings, accessed by position.</div></a>
 <a class="chapter-card" href="10-hashmap.html"><div class="num">SHEET 10</div><div class="title">HashMap</div><div class="desc">Key-value storage, the Entry API, and using a custom struct as a key.</div></a>
 </div></div>
 <div class="section-block"><h2>Custom Types & Patterns</h2><div class="card-grid">
 <a class="chapter-card" href="11-structs.html"><div class="num">SHEET 11</div><div class="title">Structs</div><div class="desc">Named fields, tuple structs, update syntax, and partial moves.</div></a>
-<a class="chapter-card" href="12-enums.html"><div class="num">SHEET 12</div><div class="title">Enums</div><div class="desc">Tagged unions — variants that can carry different data, and the built-in Option enum.</div></a>
+<a class="chapter-card" href="12-enums.html"><div class="num">SHEET 12</div><div class="title">Enums</div><div class="desc">Tagged unions, variants that can carry different data, and the built-in Option enum.</div></a>
 <a class="chapter-card" href="13-pattern-matching.html"><div class="num">SHEET 13</div><div class="title">Pattern Matching</div><div class="desc">match, if let, matches!, and binding sub-patterns with @.</div></a>
 <a class="chapter-card" href="14-methods.html"><div class="num">SHEET 14</div><div class="title">Methods & Associated Functions</div><div class="desc">impl blocks, &self vs self, and the difference between a method and an associated function.</div></a>
 </div></div>
@@ -649,18 +649,18 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <a class="chapter-card" href="18-lifetimes.html"><div class="num">SHEET 18</div><div class="title">Lifetimes</div><div class="desc">Lifetime annotations, why the compiler sometimes needs them, structs holding references, and 'static.</div></a>
 </div></div>
 <div class="section-block"><h2>Project Structure</h2><div class="card-grid">
-<a class="chapter-card" href="19-crates-and-modules.html"><div class="num">SHEET 19</div><div class="title">Crates and Modules</div><div class="desc">How Rust projects are organized — crates, modules, paths, and visibility.</div></a>
+<a class="chapter-card" href="19-crates-and-modules.html"><div class="num">SHEET 19</div><div class="title">Crates and Modules</div><div class="desc">How Rust projects are organized: crates, modules, paths, and visibility.</div></a>
 </div></div>
 <div class="section-block"><h2>Error Handling</h2><div class="card-grid">
 <a class="chapter-card" href="20-result-and-panic.html"><div class="num">SHEET 20</div><div class="title">Result and Panic</div><div class="desc">Recoverable errors with Result<T, E>, the ? operator, and when panic! is actually the right call.</div></a>
 </div></div>
 <div class="section-block"><h2>Advanced Rust</h2><div class="card-grid">
 <a class="chapter-card" href="21-functional-programming.html"><div class="num">SHEET 21</div><div class="title">Functional Programming</div><div class="desc">Closures, what they capture, and the iterator adapters that replace most manual loops.</div></a>
-<a class="chapter-card" href="22-smart-pointers.html"><div class="num">SHEET 22</div><div class="title">Smart Pointers</div><div class="desc">Box, Rc, RefCell, and when each one solves a problem that a plain reference can't.</div></a>
+<a class="chapter-card" href="22-smart-pointers.html"><div class="num">SHEET 22</div><div class="title">Smart Pointers</div><div class="desc">Box, Rc, RefCell, and when each one solves a problem that a plain reference cannot.</div></a>
 <a class="chapter-card" href="23-async-await.html"><div class="num">SHEET 23</div><div class="title">Async / Await</div><div class="desc">Futures, the async/await syntax, and why Rust async needs an executor to actually run.</div></a>
 </div></div>
 
-<footer class="site-footer">built with a hand-rolled Rust static site generator, no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

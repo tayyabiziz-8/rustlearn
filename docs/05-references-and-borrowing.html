@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>References & Borrowing &mdash; rustlearn</title>
+<title>References & Borrowing | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,18 +563,18 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Ownership & Borrowing &middot; Sheet 05 of 23</div>
   <h1>References & Borrowing</h1>
   <div class="content">
-<p>A reference (<code>&amp;T</code> or <code>&amp;mut T</code>) lets you access a value without taking ownership of it — this is called <strong>borrowing</strong>.</p>
-<p><strong>The borrowing rules, enforced at compile time:</strong> 1. At any given time, you can have <em>either</em> one mutable reference <em>or</em> any number of immutable references — never both. 2. References must always point to valid data (no dangling references).</p>
+<p>A reference (<code>&amp;T</code> or <code>&amp;mut T</code>) lets you access a value without taking ownership of it. This is called <strong>borrowing</strong>.</p>
+<p><strong>The borrowing rules, enforced at compile time:</strong> 1. At any given time, you can have either one mutable reference or any number of immutable references, never both simultaneously. 2. References must always point to valid data. No dangling references.</p>
 <h2>Immutable borrows</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s1 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
-    <span class="tk-kw">let</span> len = <span class="tk-fn">calculate_length</span>(<span class="tk-op">&amp;</span>s1); <span class="tk-cm">// &amp;s1 borrows, doesn't take ownership</span>
+    <span class="tk-kw">let</span> len = <span class="tk-fn">calculate_length</span>(<span class="tk-op">&amp;</span>s1); <span class="tk-cm">// &amp;s1 borrows but does not take ownership</span>
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;length of '{s1}' is {len}&quot;</span>); <span class="tk-cm">// s1 is still usable</span>
 }
 
 <span class="tk-kw">fn</span> <span class="tk-fn">calculate_length</span>(s: <span class="tk-op">&amp;</span><span class="tk-ty">String</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">usize</span> {
     s.<span class="tk-fn">len</span>()
-} <span class="tk-cm">// s goes out of scope, but it doesn't own the data, so nothing is dropped</span></code></pre></div>
+} <span class="tk-cm">// s goes out of scope but it does not own the data, so nothing is dropped</span></code></pre></div>
 <h2>Mutable borrows</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> <span class="tk-kw">mut</span> s1 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
@@ -585,15 +585,15 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <span class="tk-kw">fn</span> <span class="tk-fn">add_world</span>(s: <span class="tk-op">&amp;</span><span class="tk-kw">mut</span> <span class="tk-ty">String</span>) {
     s.<span class="tk-fn">push_str</span>(<span class="tk-st">&quot; world&quot;</span>);
 }</code></pre></div>
-<h2>Rule 1 in practice: one mutable XOR many immutable</h2>
+<h2>Rule 1 in practice: one mutable or many immutable</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> <span class="tk-kw">mut</span> s = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
 
     <span class="tk-kw">let</span> r1 = <span class="tk-op">&amp;</span>s;
-    <span class="tk-kw">let</span> r2 = <span class="tk-op">&amp;</span>s; <span class="tk-cm">// fine — multiple immutable borrows are allowed</span>
+    <span class="tk-kw">let</span> r2 = <span class="tk-op">&amp;</span>s; <span class="tk-cm">// fine, multiple immutable borrows are allowed</span>
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{r1} and {r2}&quot;</span>);
-    <span class="tk-cm">// r1 and r2's last use was the line above, so their borrow &quot;ends&quot; here</span>
-    <span class="tk-cm">// (this is the compiler's non-lexical lifetime analysis)</span>
+    <span class="tk-cm">// r1 and r2's last use was the line above, so their borrow ends here.</span>
+    <span class="tk-cm">// This is the compiler's non-lexical lifetime analysis.</span>
 
     <span class="tk-kw">let</span> r3 = <span class="tk-op">&amp;</span><span class="tk-kw">mut</span> s; <span class="tk-cm">// fine now, because r1/r2 are no longer used afterward</span>
     r3.<span class="tk-fn">push_str</span>(<span class="tk-st">&quot;, world&quot;</span>);
@@ -614,7 +614,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <span class="tk-cm">// fn dangle() -&gt; &amp;String {</span>
 <span class="tk-cm">//     let s = String::from(&quot;hello&quot;);</span>
 <span class="tk-cm">//     &amp;s</span>
-<span class="tk-cm">// } // s is dropped here — the reference we tried to return would point</span>
+<span class="tk-cm">// } // s is dropped here. The reference we tried to return would point</span>
 <span class="tk-cm">//   // at freed memory. The compiler rejects this before it can happen.</span>
 
 <span class="tk-cm">// The fix: return the owned value itself, transferring ownership out.</span>
@@ -627,7 +627,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> s = <span class="tk-fn">no_dangle</span>();
     <span class="tk-mc">assert_eq!</span>(s, <span class="tk-st">&quot;hello&quot;</span>);
 }</code></pre></div>
-<blockquote><p>Borrowing a <code>String</code> followed by mutating it through the <em>original</em> owner is rejected — the immutable borrow and the mutation can't coexist. For example, taking <code>&amp;s</code> and then calling <code>s.clear()</code> while the reference is still in use is a compile error, because <code>clear()</code> requires <code>&amp;mut self</code> and you already have an outstanding <code>&amp;s</code>.</p></blockquote>
+<blockquote><p>Borrowing a <code>String</code> and then mutating it through the original owner is rejected. The immutable borrow and the mutation cannot coexist. For example, taking <code>&amp;s</code> and then calling <code>s.clear()</code> while the reference is still in use is a compile error, because <code>clear()</code> requires <code>&amp;mut self</code> and you already have an outstanding <code>&amp;s</code>.</p></blockquote>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -635,7 +635,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="06-strings-and-slices.html"><span class="dir">Next &rarr;</span>Sheet 06 &middot; Strings & Slices</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

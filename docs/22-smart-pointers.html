@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Smart Pointers &mdash; rustlearn</title>
+<title>Smart Pointers | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,16 +563,16 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Advanced Rust &middot; Sheet 22 of 23</div>
   <h1>Smart Pointers</h1>
   <div class="content">
-<p>A <strong>smart pointer</strong> is a struct that holds a pointer and adds behavior on top — often some form of automatic cleanup or reference counting. They implement <code>Deref</code> (so they can be used like regular references) and <code>Drop</code> (so they clean up automatically when they go out of scope).</p>
+<p>A <strong>smart pointer</strong> is a struct that holds a pointer and adds behavior on top, often some form of automatic cleanup or reference counting. They implement <code>Deref</code> (so they can be used like regular references) and <code>Drop</code> (so they clean up automatically when they go out of scope).</p>
 <h2><code>Box&lt;T&gt;</code>: heap allocation, single owner</h2>
-<p><code>Box&lt;T&gt;</code> is the simplest smart pointer — it puts a value on the heap and gives you a pointer to it, with the same single-ownership rules as any <code>let</code> binding. The heap allocation is freed when the <code>Box</code> drops.</p>
+<p><code>Box&lt;T&gt;</code> is the simplest smart pointer. It puts a value on the heap and gives you a pointer to it, with the same single-ownership rules as any <code>let</code> binding. The heap allocation is freed when the <code>Box</code> drops.</p>
 <p>Three common reasons to reach for it:</p>
 <p><strong>1. The type is too large for the stack, or you need a stable address.</strong></p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> large_data = <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>([<span class="tk-nm">0u8</span>; <span class="tk-nm">10_000</span>]);
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;allocated {} bytes on the heap&quot;</span>, large_data.<span class="tk-fn">len</span>());
 }</code></pre></div>
-<p><strong>2. A recursive type (a type that contains itself) — the compiler needs a fixed size, which a <code>Box</code> provides.</strong></p>
+<p><strong>2. A recursive type (a type that contains itself). The compiler needs a fixed size, which a <code>Box</code> provides.</strong></p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// Without Box, the compiler rejects this:</span>
 <span class="tk-cm">//   error[E0072]: recursive type `List` has infinite size</span>
 <span class="tk-cm">//</span>
@@ -587,7 +587,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> list = <span class="tk-ty">List</span><span class="tk-op">::</span><span class="tk-ty">Cons</span>(<span class="tk-nm">1</span>, <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">List</span><span class="tk-op">::</span><span class="tk-ty">Cons</span>(<span class="tk-nm">2</span>, <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-ty">List</span><span class="tk-op">::</span><span class="tk-ty">Nil</span>))));
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{list:?}&quot;</span>);
 }</code></pre></div>
-<p><strong>3. You want to return a trait object whose concrete type isn't known at compile time.</strong></p>
+<p><strong>3. You want to return a trait object whose concrete type is not known at compile time.</strong></p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">trait</span> <span class="tk-ty">Shape</span> {
     <span class="tk-kw">fn</span> <span class="tk-fn">area</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">f64</span>;
 }
@@ -609,8 +609,8 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;area: {:.2}&quot;</span>, s.<span class="tk-fn">area</span>());
 }</code></pre></div>
 <h2><code>Rc&lt;T&gt;</code>: shared ownership within a single thread</h2>
-<p><code>Rc&lt;T&gt;</code> (&quot;reference counted&quot;) lets multiple parts of a program co-own the same heap value. Each <code>Rc::clone</code> increments a counter; each <code>drop</code> decrements it; the value is freed when the counter reaches zero.</p>
-<blockquote><p><code>Rc</code> is deliberately not <code>Send</code> — it can only be used on a single thread. For multi-threaded shared ownership, use <code>Arc&lt;T&gt;</code> (atomic reference count) instead.</p></blockquote>
+<p><code>Rc&lt;T&gt;</code> (reference counted) lets multiple parts of a program co-own the same heap value. Each <code>Rc::clone</code> increments a counter; each <code>drop</code> decrements it; the value is freed when the counter reaches zero.</p>
+<blockquote><p><code>Rc</code> is deliberately not <code>Send</code> and can only be used on a single thread. For multi-threaded shared ownership, use <code>Arc&lt;T&gt;</code> (atomic reference count) instead.</p></blockquote>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>rc<span class="tk-op">::</span><span class="tk-ty">Rc</span>;
 
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
@@ -624,11 +624,11 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 
     <span class="tk-fn">drop</span>(a);
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;after drop: {}&quot;</span>, <span class="tk-ty">Rc</span><span class="tk-op">::</span><span class="tk-fn">strong_count</span>(<span class="tk-op">&amp;</span>value)); <span class="tk-cm">// 2</span>
-} <span class="tk-cm">// value and b drop here -&gt; count -&gt; 0 -&gt; String freed</span></code></pre></div>
-<p>The limitation: <code>Rc&lt;T&gt;</code> gives you a shared <em>immutable</em> reference. You can't mutate through it without combining it with <code>RefCell</code>.</p>
+} <span class="tk-cm">// value and b drop here, count reaches 0, String is freed</span></code></pre></div>
+<p>The limitation: <code>Rc&lt;T&gt;</code> gives you a shared <em>immutable</em> reference. You cannot mutate through it without combining it with <code>RefCell</code>.</p>
 <h2><code>RefCell&lt;T&gt;</code>: interior mutability (borrow checking at runtime)</h2>
 <p>Rust's normal borrow rules are checked at compile time. <code>RefCell&lt;T&gt;</code> moves those checks to runtime: <code>.borrow()</code> gives an immutable <code>Ref&lt;T&gt;</code>, <code>.borrow_mut()</code> gives a mutable <code>RefMut&lt;T&gt;</code>, and if you violate the rules (e.g., get two mutable borrows) the program <strong>panics</strong> instead of failing to compile.</p>
-<p>This is useful when you know your access pattern is safe but the compiler's static analysis can't prove it — a common case is mutable state inside a callback or a struct that needs to mutate itself while being accessed through a shared reference.</p>
+<p>This is useful when you know your access pattern is safe but the compiler's static analysis cannot prove it. A common case is mutable state inside a callback, or a struct that needs to mutate itself while being accessed through a shared reference.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>cell<span class="tk-op">::</span><span class="tk-ty">RefCell</span>;
 
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
@@ -637,12 +637,12 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     {
         <span class="tk-kw">let</span> <span class="tk-kw">mut</span> v = data.<span class="tk-fn">borrow_mut</span>(); <span class="tk-cm">// runtime check: gets the mutable guard</span>
         v.<span class="tk-fn">push</span>(<span class="tk-nm">4</span>);
-    } <span class="tk-cm">// guard dropped here — the mutable borrow is released</span>
+    } <span class="tk-cm">// guard dropped here, the mutable borrow is released</span>
 
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{:?}&quot;</span>, data.<span class="tk-fn">borrow</span>()); <span class="tk-cm">// [1, 2, 3, 4]</span>
 }</code></pre></div>
 <h2><code>Rc&lt;RefCell&lt;T&gt;&gt;</code>: shared, mutable ownership</h2>
-<p>The most common pattern you'll see: wrap <code>RefCell&lt;T&gt;</code> in an <code>Rc&lt;T&gt;</code> to get multiple owners who can each mutate the inner value.</p>
+<p>The most common pattern you will see: wrap <code>RefCell&lt;T&gt;</code> in an <code>Rc&lt;T&gt;</code> to get multiple owners who can each mutate the inner value.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>cell<span class="tk-op">::</span><span class="tk-ty">RefCell</span>;
 <span class="tk-kw">use</span> std<span class="tk-op">::</span>rc<span class="tk-op">::</span><span class="tk-ty">Rc</span>;
 
@@ -667,7 +667,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;via branch: {}&quot;</span>, branch.<span class="tk-fn">borrow</span>().children[<span class="tk-nm">0</span>].<span class="tk-fn">borrow</span>().value);
 }</code></pre></div>
 <h2>The <code>Deref</code> trait: making a smart pointer feel like a reference</h2>
-<p><code>Deref</code> is what allows <code>*box_value</code> to work just like <code>*reference</code> — and it's what powers <strong>deref coercion</strong>: the compiler automatically inserts <code>*</code> chains so that <code>&amp;Box&lt;String&gt;</code> can be passed wherever <code>&amp;str</code> is expected, for example.</p>
+<p><code>Deref</code> is what allows <code>*box_value</code> to work just like <code>*reference</code>. It also powers <strong>deref coercion</strong>: the compiler automatically inserts <code>*</code> chains so that <code>&amp;Box&lt;String&gt;</code> can be passed wherever <code>&amp;str</code> is expected.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>ops<span class="tk-op">::</span><span class="tk-ty">Deref</span>;
 
 <span class="tk-kw">struct</span> <span class="tk-ty">MyBox</span>&lt;<span class="tk-ty">T</span>&gt;(<span class="tk-ty">T</span>);
@@ -687,7 +687,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-fn">greet</span>(<span class="tk-op">&amp;</span>boxed);
 }</code></pre></div>
 <h2>The <code>Drop</code> trait: running code on cleanup</h2>
-<p><code>Drop</code> lets you specify what happens when a value goes out of scope. Smart pointers use it to free memory or release resources — you can implement it on your own types too.</p>
+<p><code>Drop</code> lets you specify what happens when a value goes out of scope. Smart pointers use it to free memory or release resources. You can implement it on your own types too.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Resource</span> {
     name: <span class="tk-ty">String</span>,
 }
@@ -702,8 +702,8 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> _a = <span class="tk-ty">Resource</span> { name: <span class="tk-st">&quot;A&quot;</span>.<span class="tk-fn">to_string</span>() };
     <span class="tk-kw">let</span> _b = <span class="tk-ty">Resource</span> { name: <span class="tk-st">&quot;B&quot;</span>.<span class="tk-fn">to_string</span>() };
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;before end of scope&quot;</span>);
-} <span class="tk-cm">// B drops, then A drops — LIFO order (reverse of declaration)</span></code></pre></div>
-<blockquote><p>To force an early drop, use <code>std::mem::drop(value)</code> — this moves the value into <code>drop</code>, which runs the destructor immediately. Calling <code>value.drop()</code> directly is a compile error (you'd be calling <code>Drop::drop</code>, which takes <code>&amp;mut self</code>, not by value, and Rust disallows calling the destructor manually to prevent a double-free).</p></blockquote>
+} <span class="tk-cm">// B drops, then A drops in LIFO order (reverse of declaration)</span></code></pre></div>
+<blockquote><p>To force an early drop, use <code>std::mem::drop(value)</code>. This moves the value into <code>drop</code>, which runs the destructor immediately. Calling <code>value.drop()</code> directly is a compile error because you would be calling <code>Drop::drop</code>, which takes <code>&amp;mut self</code> not by value, and Rust disallows calling the destructor manually to prevent a double-free.</p></blockquote>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -711,7 +711,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="23-async-await.html"><span class="dir">Next &rarr;</span>Sheet 23 &middot; Async / Await</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Functions &mdash; rustlearn</title>
+<title>Functions | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -575,11 +575,11 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 }
 
 <span class="tk-cm">// The return type comes after `-&gt;`. The last expression in the body</span>
-<span class="tk-cm">// (no semicolon) is the returned value — no `return` keyword needed.</span>
+<span class="tk-cm">// (no semicolon) is the returned value. No `return` keyword needed.</span>
 <span class="tk-kw">fn</span> <span class="tk-fn">sum</span>(x: <span class="tk-ty">i32</span>, y: <span class="tk-ty">i32</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">i32</span> {
     x + y
 }</code></pre></div>
-<p>You <em>can</em> use <code>return</code> for an early exit; it's required when you want to leave a function before reaching its final expression.</p>
+<p>You <em>can</em> use <code>return</code> for an early exit. It is required when you want to leave a function before reaching its final expression.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">first_positive</span>(nums: <span class="tk-op">&amp;</span>[<span class="tk-ty">i32</span>]) <span class="tk-op">-&gt;</span> <span class="tk-ty">Option</span>&lt;<span class="tk-ty">i32</span>&gt; {
     <span class="tk-kw">for</span> <span class="tk-op">&amp;</span>n <span class="tk-kw">in</span> nums {
         <span class="tk-kw">if</span> n &gt; <span class="tk-nm">0</span> {
@@ -593,7 +593,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(<span class="tk-fn">first_positive</span>(<span class="tk-op">&amp;</span>[-<span class="tk-nm">3</span>, -<span class="tk-nm">1</span>, <span class="tk-nm">4</span>, <span class="tk-nm">7</span>]), <span class="tk-ty">Some</span>(<span class="tk-nm">4</span>));
     <span class="tk-mc">assert_eq!</span>(<span class="tk-fn">first_positive</span>(<span class="tk-op">&amp;</span>[-<span class="tk-nm">3</span>, -<span class="tk-nm">1</span>]), <span class="tk-ty">None</span>);
 }</code></pre></div>
-<blockquote><p>A function declared with no <code>-&gt; Type</code> returns <code>()</code>. Writing <code>fn f() -&gt; ()</code> is legal but redundant — nobody writes it that way in practice.</p></blockquote>
+<blockquote><p>A function declared with no <code>-&gt; Type</code> returns <code>()</code>. Writing <code>fn f() -&gt; ()</code> is legal but redundant. Nobody writes it that way in practice.</p></blockquote>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -601,7 +601,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="04-ownership.html"><span class="dir">Next &rarr;</span>Sheet 04 &middot; Ownership</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lifetimes &mdash; rustlearn</title>
+<title>Lifetimes | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,8 +563,8 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Generics & Abstraction &middot; Sheet 18 of 23</div>
   <h1>Lifetimes</h1>
   <div class="content">
-<p>Every reference is valid for some scope — its <strong>lifetime</strong>. Most of the time the compiler works this out on its own (see &quot;elision&quot; below). Lifetime annotations only become necessary when the compiler can't infer, on its own, how the lifetime of an output relates to the lifetimes of the inputs.</p>
-<p>Lifetimes don't change how long anything actually lives — they're a way of <em>describing</em>, to the compiler, a relationship that's already true in your code, so it can verify there's no dangling reference.</p>
+<p>Every reference is valid for some scope, called its <strong>lifetime</strong>. Most of the time the compiler works this out on its own (see &quot;elision&quot; below). Lifetime annotations only become necessary when the compiler cannot infer, on its own, how the lifetime of an output relates to the lifetimes of the inputs.</p>
+<p>Lifetimes do not change how long anything actually lives. They are a way of describing to the compiler a relationship that is already true in your code, so it can verify there is no dangling reference.</p>
 <h2>The motivating problem</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// This will NOT compile:</span>
 <span class="tk-cm">//</span>
@@ -573,10 +573,10 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <span class="tk-cm">// }</span>
 <span class="tk-cm">//</span>
 <span class="tk-cm">// error[E0106]: missing lifetime specifier</span>
-<span class="tk-cm">// The function might return x or it might return y — the compiler can't</span>
-<span class="tk-cm">// tell which input the output reference is tied to, so it can't verify</span>
+<span class="tk-cm">// The function might return x or it might return y. The compiler cannot</span>
+<span class="tk-cm">// tell which input the output reference is tied to, so it cannot verify</span>
 <span class="tk-cm">// the returned reference will still be valid wherever it ends up used.</span></code></pre></div>
-<p>The fix: tell the compiler, explicitly, that the output lives exactly as long as the <em>shorter</em> of the two inputs.</p>
+<p>The fix: tell the compiler explicitly that the output lives exactly as long as the shorter of the two inputs.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// 'a is a lifetime parameter, declared like a generic type parameter.</span>
 <span class="tk-cm">// This signature says: &quot;the returned &amp;str is valid for at least as long</span>
 <span class="tk-cm">// as BOTH x and y are valid.&quot;</span>
@@ -591,28 +591,11 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
         <span class="tk-kw">let</span> s2 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;xyz&quot;</span>);
         result = <span class="tk-fn">longest</span>(s1.<span class="tk-fn">as_str</span>(), s2.<span class="tk-fn">as_str</span>());
         <span class="tk-mc">assert_eq!</span>(result, <span class="tk-st">&quot;long string is long&quot;</span>);
-    } <span class="tk-cm">// s2 dropped here — but `result` was already used above, while s2</span>
+    } <span class="tk-cm">// s2 dropped here, but `result` was already used above while s2</span>
       <span class="tk-cm">// was still alive, so this compiles fine.</span>
 }</code></pre></div>
-<div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> longest&lt;<span class="tk-lt">'a</span>&gt;(x: <span class="tk-op">&amp;</span><span class="tk-lt">'a</span> <span class="tk-ty">str</span>, y: <span class="tk-op">&amp;</span><span class="tk-lt">'a</span> <span class="tk-ty">str</span>) <span class="tk-op">-&gt;</span> <span class="tk-op">&amp;</span><span class="tk-lt">'a</span> <span class="tk-ty">str</span> {
-    <span class="tk-kw">if</span> x.<span class="tk-fn">len</span>() &gt; y.<span class="tk-fn">len</span>() { x } <span class="tk-kw">else</span> { y }
-}
-
-<span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
-    <span class="tk-kw">let</span> s1 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;long string is long&quot;</span>);
-    <span class="tk-kw">let</span> result;
-    {
-        <span class="tk-kw">let</span> s2 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;xyz&quot;</span>);
-        result = <span class="tk-fn">longest</span>(s1.<span class="tk-fn">as_str</span>(), s2.<span class="tk-fn">as_str</span>());
-        <span class="tk-cm">// If we tried to use `result` AFTER this inner block ends, it</span>
-        <span class="tk-cm">// would be a compile error: result might be borrowing s2, and</span>
-        <span class="tk-cm">// s2 is about to be dropped. The error surfaces here, at compile</span>
-        <span class="tk-cm">// time, instead of as a dangling pointer at runtime.</span>
-    }
-    <span class="tk-cm">// println!(&quot;{result}&quot;); // would fail to compile if uncommented</span>
-}</code></pre></div>
 <h2>Elision: most of the time you write nothing</h2>
-<p>The compiler applies three rules before giving up and asking for an annotation: (1) each reference parameter gets its own lifetime, (2) if there's exactly one input lifetime, it's assigned to all outputs, (3) if one parameter is <code>&amp;self</code>/<code>&amp;mut self</code>, its lifetime is assigned to all outputs. This covers the overwhelming majority of functions, which is why you rarely see <code>'a</code> in everyday code.</p>
+<p>The compiler applies three rules before giving up and asking for an annotation: (1) each reference parameter gets its own lifetime, (2) if there is exactly one input lifetime it is assigned to all outputs, (3) if one parameter is <code>&amp;self</code> or <code>&amp;mut self</code> its lifetime is assigned to all outputs. This covers the overwhelming majority of functions, which is why you rarely see <code>'a</code> in everyday code.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// No annotation needed: rule 2 applies (one input reference, so the</span>
 <span class="tk-cm">// output borrows from it).</span>
 <span class="tk-kw">fn</span> <span class="tk-fn">first_word</span>(s: <span class="tk-op">&amp;</span><span class="tk-ty">str</span>) <span class="tk-op">-&gt;</span> <span class="tk-op">&amp;</span><span class="tk-ty">str</span> {
@@ -623,7 +606,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(<span class="tk-fn">first_word</span>(<span class="tk-st">&quot;hello world&quot;</span>), <span class="tk-st">&quot;hello&quot;</span>);
 }</code></pre></div>
 <h2>Structs that hold a reference</h2>
-<p>A struct can't hold a reference without naming the lifetime — Rust needs to guarantee the struct never outlives the data it's borrowing.</p>
+<p>A struct cannot hold a reference without naming the lifetime. Rust needs to guarantee the struct never outlives the data it is borrowing.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Excerpt</span>&lt;<span class="tk-lt">'a</span>&gt; {
     part: <span class="tk-op">&amp;</span><span class="tk-lt">'a</span> <span class="tk-ty">str</span>,
 }
@@ -640,18 +623,18 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> first_sentence = novel.<span class="tk-fn">split</span>(<span class="tk-st">'.'</span>).<span class="tk-fn">next</span>().<span class="tk-fn">unwrap</span>();
 
     <span class="tk-kw">let</span> excerpt = <span class="tk-ty">Excerpt</span> { part: first_sentence };
-    <span class="tk-cm">// `excerpt` can't outlive `novel`, because `part` borrows from it —</span>
-    <span class="tk-cm">// the compiler enforces that statically.</span>
+    <span class="tk-cm">// `excerpt` cannot outlive `novel`, because `part` borrows from it.</span>
+    <span class="tk-cm">// The compiler enforces that statically.</span>
 
     <span class="tk-mc">assert_eq!</span>(excerpt.<span class="tk-fn">announce</span>(<span class="tk-st">&quot;note&quot;</span>), <span class="tk-st">&quot;Call me Ishmael&quot;</span>);
 }</code></pre></div>
 <h2><code>'static</code>: lives for the whole program</h2>
-<p><code>'static</code> is a special lifetime meaning &quot;valid for the entire duration of the program.&quot; String literals are <code>'static</code> because they're baked directly into the binary.</p>
+<p><code>'static</code> is a special lifetime meaning &quot;valid for the entire duration of the program.&quot; String literals are <code>'static</code> because they are baked directly into the binary.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s: <span class="tk-op">&amp;</span><span class="tk-lt">'static</span> <span class="tk-ty">str</span> = <span class="tk-st">&quot;I live for the whole program&quot;</span>;
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{s}&quot;</span>);
 }</code></pre></div>
-<blockquote><p><code>'static</code> is sometimes reached for as a quick fix to silence a lifetime error — but that usually just moves the problem, by forcing data to live longer than it needs to (or forcing a clone). Treat a <code>'static</code> requirement as a sign to double-check whether the reference should really be returned at all, rather than as the default fix.</p></blockquote>
+<blockquote><p><code>'static</code> is sometimes reached for as a quick fix to silence a lifetime error, but that usually just moves the problem by forcing data to live longer than it needs to (or forcing a clone). Treat a <code>'static</code> requirement as a sign to double-check whether the reference should really be returned at all, rather than as the default fix.</p></blockquote>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -659,7 +642,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="19-crates-and-modules.html"><span class="dir">Next &rarr;</span>Sheet 19 &middot; Crates and Modules</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

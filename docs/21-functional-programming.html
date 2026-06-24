@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Functional Programming &mdash; rustlearn</title>
+<title>Functional Programming | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,24 +563,24 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Advanced Rust &middot; Sheet 21 of 23</div>
   <h1>Functional Programming</h1>
   <div class="content">
-<p>Rust isn't a purely functional language, but closures and iterators give you most of the functional toolkit — and the type system tracks exactly what a closure captures, so there's no hidden runtime cost or surprise mutation.</p>
+<p>Rust is not a purely functional language, but closures and iterators give you most of the functional toolkit. The type system tracks exactly what a closure captures, so there is no hidden runtime cost or surprise mutation.</p>
 <h2>Closures</h2>
 <p>A closure is an anonymous function that can capture variables from the scope it was defined in.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> factor = <span class="tk-nm">3</span>;
 
-    <span class="tk-cm">// |params| body — type annotations are usually inferred</span>
+    <span class="tk-cm">// |params| body, type annotations are usually inferred</span>
     <span class="tk-kw">let</span> multiply = |x: <span class="tk-ty">i32</span>| x <span class="tk-op">*</span> factor; <span class="tk-cm">// captures `factor` by reference</span>
 
     <span class="tk-mc">assert_eq!</span>(<span class="tk-fn">multiply</span>(<span class="tk-nm">5</span>), <span class="tk-nm">15</span>);
     <span class="tk-mc">assert_eq!</span>(<span class="tk-fn">multiply</span>(<span class="tk-nm">10</span>), <span class="tk-nm">30</span>);
 }</code></pre></div>
 <h2>What gets captured, and how</h2>
-<p>Rust infers the <em>least</em> restrictive capture mode that makes the closure body compile: borrow immutably if possible, mutably if needed, or take ownership (<code>move</code>) if you ask for it explicitly.</p>
+<p>Rust infers the least restrictive capture mode that makes the closure body compile: borrow immutably if possible, mutably if needed, or take ownership with <code>move</code> if you ask for it explicitly.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> name = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;Ferris&quot;</span>);
 
-    <span class="tk-cm">// Captures `name` by immutable reference — name is still usable after.</span>
+    <span class="tk-cm">// Captures `name` by immutable reference, so name is still usable after.</span>
     <span class="tk-kw">let</span> greet = <span class="tk-op">||</span> <span class="tk-mc">println!</span>(<span class="tk-st">&quot;hello, {name}&quot;</span>);
     <span class="tk-fn">greet</span>();
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;still usable: {name}&quot;</span>);
@@ -594,14 +594,14 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-fn">increment</span>();
     <span class="tk-fn">increment</span>();
 }</code></pre></div>
-<p><code>move</code> forces the closure to take ownership of everything it uses, instead of borrowing — essential when the closure needs to outlive the scope it was created in (a very common requirement when spawning a thread).</p>
+<p><code>move</code> forces the closure to take ownership of everything it uses instead of borrowing. This is essential when the closure needs to outlive the scope it was created in, which is a very common requirement when spawning a thread.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>thread;
 
 <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> data = <span class="tk-mc">vec!</span>[<span class="tk-nm">1</span>, <span class="tk-nm">2</span>, <span class="tk-nm">3</span>];
 
     <span class="tk-cm">// Without `move`, the closure would borrow `data`, and the compiler</span>
-    <span class="tk-cm">// can't guarantee `data` outlives the spawned thread. `move` makes</span>
+    <span class="tk-cm">// cannot guarantee `data` outlives the spawned thread. `move` makes</span>
     <span class="tk-cm">// the closure own its copy outright.</span>
     <span class="tk-kw">let</span> handle = thread<span class="tk-op">::</span><span class="tk-fn">spawn</span>(<span class="tk-kw">move</span> <span class="tk-op">||</span> {
         <span class="tk-mc">println!</span>(<span class="tk-st">&quot;data on another thread: {data:?}&quot;</span>);
@@ -610,7 +610,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     handle.<span class="tk-fn">join</span>().<span class="tk-fn">unwrap</span>();
 }</code></pre></div>
 <h2>The three closure traits</h2>
-<p>Every closure implements one or more of <code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code>, depending on how it uses its captures — this is what lets a function parameter say &quot;accept any closure that only reads its captures&quot; vs. &quot;...that needs to consume them.&quot;</p>
+<p>Every closure implements one or more of <code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code>, depending on how it uses its captures. This is what lets a function parameter say &quot;accept any closure that only reads its captures&quot; vs. &quot;accept any closure that needs to consume them.&quot;</p>
 <p>| Trait | Can be called | Typical use | |---|---|---| | <code>Fn</code> | repeatedly, <code>&amp;self</code> | only reads captured variables | | <code>FnMut</code> | repeatedly, <code>&amp;mut self</code> | mutates a captured variable | | <code>FnOnce</code> | exactly once, <code>self</code> | consumes (moves out of) a captured variable |</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> call_twice&lt;<span class="tk-ty">F</span>: <span class="tk-ty">Fn</span>()&gt;(f: <span class="tk-ty">F</span>) {
     <span class="tk-fn">f</span>();
@@ -630,7 +630,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(result, <span class="tk-st">&quot;consumed&quot;</span>);
 }</code></pre></div>
 <h2>Iterators</h2>
-<p>An iterator produces values one at a time and is <strong>lazy</strong> — calling <code>.map()</code> doesn't do any work by itself; nothing actually runs until something consumes the iterator (<code>.collect()</code>, <code>for</code>, <code>.sum()</code>, etc.).</p>
+<p>An iterator produces values one at a time and is <strong>lazy</strong>. Calling <code>.map()</code> does not do any work by itself. Nothing actually runs until something consumes the iterator (<code>.collect()</code>, <code>for</code>, <code>.sum()</code>, etc.).</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> numbers = <span class="tk-mc">vec!</span>[<span class="tk-nm">1</span>, <span class="tk-nm">2</span>, <span class="tk-nm">3</span>, <span class="tk-nm">4</span>, <span class="tk-nm">5</span>];
 
@@ -644,7 +644,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(total, <span class="tk-nm">15</span>);
 }</code></pre></div>
 <h2>Chaining adapters</h2>
-<p>This is where iterators replace most hand-written loops — each step describes <em>what</em> transformation happens, and the chain only runs through the data once when finally consumed.</p>
+<p>This is where iterators replace most hand-written loops. Each step describes what transformation happens, and the chain only runs through the data once when finally consumed.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> words = <span class="tk-mc">vec!</span>[<span class="tk-st">&quot;apple&quot;</span>, <span class="tk-st">&quot;fig&quot;</span>, <span class="tk-st">&quot;banana&quot;</span>, <span class="tk-st">&quot;kiwi&quot;</span>, <span class="tk-st">&quot;cherry&quot;</span>];
 
@@ -657,14 +657,14 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 
     <span class="tk-mc">assert_eq!</span>(result, <span class="tk-mc">vec!</span>[<span class="tk-st">&quot;APPLE&quot;</span>, <span class="tk-st">&quot;BANANA&quot;</span>]);
 }</code></pre></div>
-<p><code>fold</code> is the general-purpose reducer everything else (<code>sum</code>, <code>max</code>, <code>count</code>...) is built on conceptually — it threads an accumulator through every element.</p>
+<p><code>fold</code> is the general-purpose reducer that everything else (<code>sum</code>, <code>max</code>, <code>count</code>, ...) is built on conceptually. It threads an accumulator through every element.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> numbers = <span class="tk-mc">vec!</span>[<span class="tk-nm">1</span>, <span class="tk-nm">2</span>, <span class="tk-nm">3</span>, <span class="tk-nm">4</span>, <span class="tk-nm">5</span>];
 
     <span class="tk-kw">let</span> product = numbers.<span class="tk-fn">iter</span>().<span class="tk-fn">fold</span>(<span class="tk-nm">1</span>, |acc, <span class="tk-op">&amp;</span>n| acc <span class="tk-op">*</span> n);
     <span class="tk-mc">assert_eq!</span>(product, <span class="tk-nm">120</span>);
 
-    <span class="tk-cm">// Building a String is a common fold/reduce target too:</span>
+    <span class="tk-cm">// Building a String is a common fold target too:</span>
     <span class="tk-kw">let</span> sentence = <span class="tk-mc">vec!</span>[<span class="tk-st">&quot;the&quot;</span>, <span class="tk-st">&quot;quick&quot;</span>, <span class="tk-st">&quot;fox&quot;</span>]
         .<span class="tk-fn">iter</span>()
         .<span class="tk-fn">fold</span>(<span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">new</span>(), |<span class="tk-kw">mut</span> acc, word| {
@@ -676,7 +676,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
         });
     <span class="tk-mc">assert_eq!</span>(sentence, <span class="tk-st">&quot;the quick fox&quot;</span>);
 }</code></pre></div>
-<blockquote><p>Iterator chains aren't just shorter — the compiler typically optimizes them down to the same machine code as the equivalent hand-written loop (a &quot;zero-cost abstraction&quot;), so reaching for <code>.map().filter().collect()</code> over a manual loop is a readability choice, not a performance trade-off.</p></blockquote>
+<blockquote><p>Iterator chains are not just shorter. The compiler typically optimizes them down to the same machine code as the equivalent hand-written loop (a &quot;zero-cost abstraction&quot;), so reaching for <code>.map().filter().collect()</code> over a manual loop is a readability choice, not a performance trade-off.</p></blockquote>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -684,7 +684,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="22-smart-pointers.html"><span class="dir">Next &rarr;</span>Sheet 22 &middot; Smart Pointers</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

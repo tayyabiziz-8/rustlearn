@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ownership &mdash; rustlearn</title>
+<title>Ownership | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -564,48 +564,48 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <h1>Ownership</h1>
   <div class="content">
 <p>Ownership is the set of rules the compiler checks <strong>at compile time</strong>, with zero runtime cost, to decide when memory gets freed.</p>
-<p><strong>The three rules:</strong> 1. Each value has exactly one owner (one variable that's responsible for it). 2. There can only be one owner at a time. 3. When the owner goes out of scope, the value is dropped (its memory is freed).</p>
+<p><strong>The three rules:</strong> 1. Each value has exactly one owner, one variable that is responsible for it. 2. There can only be one owner at a time. 3. When the owner goes out of scope, the value is dropped and its memory is freed.</p>
 <h2>Stack vs. heap, in one example</h2>
-<p><code>String</code> is heap-allocated and growable. The variable itself — a small fixed-size record of pointer, length, and capacity — lives on the stack; the actual character data lives on the heap.</p>
+<p><code>String</code> is heap-allocated and growable. The variable itself is a small fixed-size record of pointer, length, and capacity that lives on the stack. The actual character data lives on the heap.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s1 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
     <span class="tk-cm">// s1 on the stack: { ptr -&gt; heap, len: 5, capacity: 5 }</span>
     <span class="tk-cm">// heap: the bytes &quot;hello&quot;</span>
 }</code></pre></div>
-<p>Plain numbers, by contrast, live entirely on the stack and have a known, fixed size — so they're cheap to duplicate.</p>
+<p>Plain numbers live entirely on the stack and have a known, fixed size, so they are cheap to duplicate.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> x = <span class="tk-nm">5</span>;
     <span class="tk-kw">let</span> y = x; <span class="tk-cm">// a full bit-for-bit copy, two independent values</span>
-    <span class="tk-mc">assert_eq!</span>(x, <span class="tk-nm">5</span>); <span class="tk-cm">// x is still valid — i32 implements the Copy trait</span>
+    <span class="tk-mc">assert_eq!</span>(x, <span class="tk-nm">5</span>); <span class="tk-cm">// x is still valid because i32 implements the Copy trait</span>
     <span class="tk-mc">assert_eq!</span>(y, <span class="tk-nm">5</span>);
 }</code></pre></div>
 <h2>Move: why <code>String</code> behaves differently</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s1 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
-    <span class="tk-kw">let</span> s2 = s1; <span class="tk-cm">// the stack record (ptr/len/capacity) is copied to s2...</span>
-                 <span class="tk-cm">// ...but the heap data is NOT duplicated.</span>
+    <span class="tk-kw">let</span> s2 = s1; <span class="tk-cm">// the stack record (ptr/len/capacity) is copied to s2</span>
+                 <span class="tk-cm">// but the heap data is NOT duplicated.</span>
 
-    <span class="tk-cm">// s1 is now considered moved-out-of and can't be used again.</span>
-    <span class="tk-cm">// This is Rust preventing a double-free: if both s1 and s2 stayed</span>
-    <span class="tk-cm">// valid, they'd both try to free the same heap memory when dropped.</span>
+    <span class="tk-cm">// s1 is now considered moved-out-of and cannot be used again.</span>
+    <span class="tk-cm">// This prevents a double-free: if both s1 and s2 stayed</span>
+    <span class="tk-cm">// valid, they would both try to free the same heap memory when dropped.</span>
 
     <span class="tk-cm">// println!(&quot;{s1}&quot;); // compile error: value borrowed after move</span>
 
-    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{s2}&quot;</span>); <span class="tk-cm">// fine — s2 is the sole owner now</span>
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{s2}&quot;</span>); <span class="tk-cm">// fine, s2 is the sole owner now</span>
 }</code></pre></div>
 <h2>Clone: an explicit deep copy</h2>
-<p>When you actually want two independent copies of heap data, call <code>.clone()</code> — it's deliberately explicit, so a deep copy never happens silently.</p>
+<p>When you actually want two independent copies of heap data, call <code>.clone()</code>. It is deliberately explicit so a deep copy never happens silently.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s1 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
     <span class="tk-kw">let</span> s2 = s1.<span class="tk-fn">clone</span>();
-    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;s1 = {s1}, s2 = {s2}&quot;</span>); <span class="tk-cm">// both valid — separate heap allocations</span>
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;s1 = {s1}, s2 = {s2}&quot;</span>); <span class="tk-cm">// both valid, separate heap allocations</span>
 }</code></pre></div>
 <h2>Ownership and function calls</h2>
 <p>Passing a value to a function moves it, exactly like an assignment does.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> s1 = <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello&quot;</span>);
     <span class="tk-fn">takes_ownership</span>(s1);
-    <span class="tk-cm">// s1 is invalid from here on — ownership moved into the function</span>
+    <span class="tk-cm">// s1 is invalid from here on, ownership moved into the function</span>
 
     <span class="tk-kw">let</span> s2 = <span class="tk-fn">gives_ownership</span>();
     <span class="tk-kw">let</span> s3 = <span class="tk-fn">takes_and_gives_back</span>(s2);
@@ -613,12 +613,12 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 
     <span class="tk-kw">let</span> x = <span class="tk-nm">5</span>;
     <span class="tk-fn">makes_copy</span>(x);
-    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{x}&quot;</span>); <span class="tk-cm">// fine — i32 is Copy, so `x` was duplicated, not moved</span>
+    <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{x}&quot;</span>); <span class="tk-cm">// fine, i32 is Copy so `x` was duplicated, not moved</span>
 }
 
 <span class="tk-kw">fn</span> <span class="tk-fn">takes_ownership</span>(some_string: <span class="tk-ty">String</span>) {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{some_string}&quot;</span>);
-} <span class="tk-cm">// some_string goes out of scope here -&gt; dropped</span>
+} <span class="tk-cm">// some_string goes out of scope here and is dropped</span>
 
 <span class="tk-kw">fn</span> <span class="tk-fn">gives_ownership</span>() <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
     <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;world&quot;</span>)
@@ -636,7 +636,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> <span class="tk-kw">mut</span> x: <span class="tk-ty">Box</span>&lt;<span class="tk-ty">i32</span>&gt; = <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(<span class="tk-nm">5</span>); <span class="tk-cm">// a heap-allocated i32, x owns it</span>
     <span class="tk-op">*</span>x = <span class="tk-nm">7</span>; <span class="tk-cm">// dereference to read/write the heap value</span>
     <span class="tk-mc">assert_eq!</span>(<span class="tk-op">*</span>x, <span class="tk-nm">7</span>);
-} <span class="tk-cm">// x goes out of scope -&gt; the heap allocation is freed automatically</span></code></pre></div>
+} <span class="tk-cm">// x goes out of scope and the heap allocation is freed automatically</span></code></pre></div>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -644,7 +644,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="05-references-and-borrowing.html"><span class="dir">Next &rarr;</span>Sheet 05 &middot; References & Borrowing</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flow Control &mdash; rustlearn</title>
+<title>Flow Control | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -564,7 +564,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <h1>Flow Control</h1>
   <div class="content">
 <h2>if / else</h2>
-<p><code>if</code> is an expression in Rust — both branches must produce the same type if you're going to bind the result.</p>
+<p><code>if</code> is an expression in Rust. Both branches must produce the same type if you are going to bind the result.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> n = -<span class="tk-nm">5</span>;
 
@@ -584,18 +584,18 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <p><code>for</code> consumes anything that implements <code>IntoIterator</code>. Ranges, arrays, and <code>&amp;collection</code> are the most common.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">for</span> n <span class="tk-kw">in</span> <span class="tk-nm">0</span><span class="tk-op">..</span><span class="tk-nm">5</span> {
-        <span class="tk-mc">print!</span>(<span class="tk-st">&quot;{n} &quot;</span>); <span class="tk-cm">// 0 1 2 3 4 — exclusive end</span>
+        <span class="tk-mc">print!</span>(<span class="tk-st">&quot;{n} &quot;</span>); <span class="tk-cm">// 0 1 2 3 4 (exclusive end)</span>
     }
     <span class="tk-mc">println!</span>();
 
     <span class="tk-kw">for</span> n <span class="tk-kw">in</span> <span class="tk-nm">1</span><span class="tk-op">..=</span><span class="tk-nm">5</span> {
-        <span class="tk-mc">print!</span>(<span class="tk-st">&quot;{n} &quot;</span>); <span class="tk-cm">// 1 2 3 4 5 — inclusive end, because of `=`</span>
+        <span class="tk-mc">print!</span>(<span class="tk-st">&quot;{n} &quot;</span>); <span class="tk-cm">// 1 2 3 4 5 (inclusive end, because of `=`)</span>
     }
     <span class="tk-mc">println!</span>();
 
     <span class="tk-kw">let</span> names = [<span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;Liming&quot;</span>), <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;Hanmeimei&quot;</span>)];
     <span class="tk-kw">for</span> name <span class="tk-kw">in</span> <span class="tk-op">&amp;</span>names {
-        <span class="tk-cm">// borrowing `&amp;names` instead of moving it — `names` is still usable after</span>
+        <span class="tk-cm">// borrowing `&amp;names` instead of moving it so `names` is still usable after</span>
         <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{name}&quot;</span>);
     }
 
@@ -616,8 +616,8 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     }
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;loop finished, n = {n}&quot;</span>);
 }</code></pre></div>
-<h2>loop — and breaking with a value</h2>
-<p><code>loop</code> runs forever until a <code>break</code>. Unlike <code>for</code>/<code>while</code>, <code>break</code> can carry a value out of a <code>loop</code>, which makes <code>loop</code> an expression.</p>
+<h2>loop and breaking with a value</h2>
+<p><code>loop</code> runs forever until a <code>break</code>. Unlike <code>for</code> and <code>while</code>, <code>break</code> can carry a value out of a <code>loop</code>, which makes <code>loop</code> an expression.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> <span class="tk-kw">mut</span> counter = <span class="tk-nm">0</span>;
 
@@ -631,7 +631,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(result, <span class="tk-nm">20</span>);
 }</code></pre></div>
 <h2>Labeled loops</h2>
-<p>When loops are nested, a bare <code>break</code>/<code>continue</code> only affects the innermost loop. Label the outer loop to target it directly.</p>
+<p>When loops are nested, a bare <code>break</code> or <code>continue</code> only affects the innermost loop. Label the outer loop to target it directly.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> <span class="tk-kw">mut</span> count = <span class="tk-nm">0</span>;
 
@@ -656,7 +656,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="03-functions.html"><span class="dir">Next &rarr;</span>Sheet 03 &middot; Functions</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

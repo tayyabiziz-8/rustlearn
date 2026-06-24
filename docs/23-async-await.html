@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Async / Await &mdash; rustlearn</title>
+<title>Async / Await | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,14 +563,14 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Advanced Rust &middot; Sheet 23 of 23</div>
   <h1>Async / Await</h1>
   <div class="content">
-<p>Rust's async model is built on <strong>futures</strong> — values that represent a computation that hasn't completed yet. They're pure data structures until something (an <strong>executor</strong>) actually drives them to completion. The <code>async</code>/<code>await</code> syntax is how you write that logic without manually implementing the <code>Future</code> trait.</p>
+<p>Rust's async model is built on <strong>futures</strong>, which are values that represent a computation that has not completed yet. They are pure data structures until something called an <strong>executor</strong> actually drives them to completion. The <code>async</code>/<code>await</code> syntax is how you write that logic without manually implementing the <code>Future</code> trait.</p>
 <h2>The mental model: poll-based, not callback-based</h2>
-<p>Unlike Node.js callbacks or Python coroutines, Rust futures don't run until they're <em>polled</em>. An executor (from a runtime like Tokio or async-std) manages a queue of futures and calls <code>.poll()</code> on each one repeatedly until it's done. If a future isn't ready (e.g., waiting for a socket), it returns <code>Poll::Pending</code> and registers a <strong>waker</strong> so the executor can re-poll it when the data arrives.</p>
-<p>This means a future that you create but never <code>await</code> (and never pass to an executor) does <em>nothing</em>. There's no implicit runtime.</p>
+<p>Unlike Node.js callbacks or Python coroutines, Rust futures do not run until they are <em>polled</em>. An executor (from a runtime like Tokio or async-std) manages a queue of futures and calls <code>.poll()</code> on each one repeatedly until it is done. If a future is not ready (e.g., waiting for a socket), it returns <code>Poll::Pending</code> and registers a <strong>waker</strong> so the executor can re-poll it when the data arrives.</p>
+<p>This means a future that you create but never <code>await</code> (and never pass to an executor) does <em>nothing</em>. There is no implicit runtime.</p>
 <h2><code>async fn</code>: a function that returns a Future</h2>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// `async fn` transforms the return type from `T` into `impl Future&lt;Output = T&gt;`.</span>
-<span class="tk-cm">// The body doesn't run immediately when the function is called —</span>
-<span class="tk-cm">// it runs when the returned future is awaited.</span>
+<span class="tk-cm">// The body does not run immediately when the function is called.</span>
+<span class="tk-cm">// It runs when the returned future is awaited.</span>
 <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">say_hello</span>() <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
     <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hello from async&quot;</span>)
 }
@@ -582,7 +582,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{msg}&quot;</span>);
 }</code></pre></div>
 <h2>You need an executor to run async code</h2>
-<p>Rust's standard library defines <code>Future</code> but ships <strong>no</strong> async executor. You bring one in as a dependency. The two most common are <strong>Tokio</strong> and <strong>async-std</strong>. The <code>#[tokio::main]</code> macro wraps your <code>async fn main</code> so there's an executor running before any <code>await</code> is reached.</p>
+<p>Rust's standard library defines <code>Future</code> but ships no async executor. You bring one in as a dependency. The two most common are <strong>Tokio</strong> and <strong>async-std</strong>. The <code>#[tokio::main]</code> macro wraps your <code>async fn main</code> so there is an executor running before any <code>await</code> is reached.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// In Cargo.toml:</span>
 <span class="tk-cm">// [dependencies]</span>
 <span class="tk-cm">// tokio = { version = &quot;1&quot;, features = [&quot;full&quot;] }</span>
@@ -596,11 +596,11 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">fetch_data</span>() <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
     <span class="tk-cm">// In real code this would be a network call, file read, etc.</span>
     <span class="tk-cm">// tokio::time::sleep, reqwest::get(), tokio::fs::read_to_string()</span>
-    <span class="tk-cm">// all return futures you'd .await here.</span>
+    <span class="tk-cm">// all return futures you would .await here.</span>
     <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;some data&quot;</span>)
 }</code></pre></div>
 <h2>Running two futures concurrently with <code>tokio::join!</code></h2>
-<p><code>.await</code> on a single future is sequential — the next line doesn't start until the first one finishes. To run two futures at the <em>same time</em> and wait for both, use <code>join!</code>:</p>
+<p><code>.await</code> on a single future is sequential. The next line does not start until the first one finishes. To run two futures at the same time and wait for both, use <code>join!</code>:</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>time<span class="tk-op">::</span><span class="tk-ty">Duration</span>;
 <span class="tk-kw">use</span> tokio<span class="tk-op">::</span>time<span class="tk-op">::</span>sleep;
 
@@ -617,12 +617,12 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <span class="tk-at">#[tokio::main]</span>
 <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-cm">// Both tasks start immediately and run concurrently on the same thread.</span>
-    <span class="tk-cm">// Total wall time ≈ 200ms, not 300ms.</span>
+    <span class="tk-cm">// Total wall time is roughly 200ms, not 300ms.</span>
     <span class="tk-kw">let</span> (a, b) = tokio<span class="tk-op">::</span><span class="tk-mc">join!</span>(<span class="tk-fn">task_a</span>(), <span class="tk-fn">task_b</span>());
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{a}, {b}&quot;</span>);
 }</code></pre></div>
 <h2>Spawning a background task with <code>tokio::spawn</code></h2>
-<p><code>join!</code> waits for both futures in the current task. <code>spawn</code> schedules a future as an independent task — it can run on a different thread entirely, and you hold a <code>JoinHandle</code> to collect the result later.</p>
+<p><code>join!</code> waits for both futures in the current task. <code>spawn</code> schedules a future as an independent task that can run on a different thread entirely, and you hold a <code>JoinHandle</code> to collect the result later.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-at">#[tokio::main]</span>
 <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> handle = tokio<span class="tk-op">::</span><span class="tk-fn">spawn</span>(<span class="tk-kw">async</span> {
@@ -634,7 +634,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(result, <span class="tk-nm">42</span>);
 }</code></pre></div>
 <h2><code>async</code> blocks</h2>
-<p>You don't need a full <code>async fn</code> — any block can be made into a future with <code>async { ... }</code>. Useful for capturing variables into a future inline.</p>
+<p>You do not need a full <code>async fn</code>. Any block can be made into a future with <code>async { ... }</code>. Useful for capturing variables into a future inline.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-at">#[tokio::main]</span>
 <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> x = <span class="tk-nm">10</span>;
@@ -648,7 +648,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(result, <span class="tk-nm">20</span>);
 }</code></pre></div>
 <h2>Why <code>async</code> trait methods need extra care</h2>
-<p>Async functions in traits aren't directly supported in stable Rust before 1.75 without the <code>async-trait</code> crate, because <code>async fn</code> desugars to returning <code>impl Future</code>, and trait methods can't return <code>impl Trait</code> in a stable, object-safe way (yet). From Rust 1.75 onward, <code>async fn</code> in traits is stable for many use cases.</p>
+<p>Async functions in traits are not directly supported in stable Rust before 1.75 without the <code>async-trait</code> crate, because <code>async fn</code> desugars to returning <code>impl Future</code>, and trait methods cannot return <code>impl Trait</code> in a stable, object-safe way without explicit support. From Rust 1.75 onward, <code>async fn</code> in traits is stable for many use cases.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-cm">// Rust 1.75+ stable approach:</span>
 <span class="tk-kw">trait</span> <span class="tk-ty">Downloader</span> {
     <span class="tk-kw">async</span> <span class="tk-kw">fn</span> <span class="tk-fn">download</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>, url: <span class="tk-op">&amp;</span><span class="tk-ty">str</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span>;
@@ -664,10 +664,10 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 <h2>The key facts, in one place</h2>
 <ul>
 <li><code>async fn foo() -&gt; T</code> actually returns <code>impl Future&lt;Output = T&gt;</code>. The body is a state machine generated by the compiler.</li>
-<li><code>.await</code> suspends the <em>current</em> future and hands control back to the executor until the inner future is ready.</li>
+<li><code>.await</code> suspends the current future and hands control back to the executor until the inner future is ready.</li>
 <li>Nothing runs until an executor polls it. There is no implicit thread or timer.</li>
 <li>Concurrency: use <code>join!</code> (or <code>select!</code>) to drive multiple futures simultaneously on one task. Use <code>spawn</code> to put work on a separate task (possibly a separate thread in a multi-threaded runtime).</li>
-<li>Sending futures across threads requires they are <code>Send</code> — this means their captured variables must also be <code>Send</code>. <code>Rc&lt;T&gt;</code> and <code>RefCell&lt;T&gt;</code> are not <code>Send</code>; <code>Arc&lt;T&gt;</code> and <code>Mutex&lt;T&gt;</code> are.</li>
+<li>Sending futures across threads requires they are <code>Send</code>. This means their captured variables must also be <code>Send</code>. <code>Rc&lt;T&gt;</code> and <code>RefCell&lt;T&gt;</code> are not <code>Send</code>; <code>Arc&lt;T&gt;</code> and <code>Mutex&lt;T&gt;</code> are.</li>
 </ul>
 
   </div>
@@ -676,7 +676,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span></span>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

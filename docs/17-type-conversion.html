@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Type Conversion &mdash; rustlearn</title>
+<title>Type Conversion | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,22 +563,22 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Generics & Abstraction &middot; Sheet 17 of 23</div>
   <h1>Type Conversion</h1>
   <div class="content">
-<p>Rust never converts types implicitly — no silent <code>int</code> to <code>float</code> promotion like in C. Every conversion is something you write explicitly, which means the compiler can show you exactly where data might be reshaped or lost.</p>
+<p>Rust never converts types implicitly. No silent <code>int</code> to <code>float</code> promotion like in C. Every conversion is something you write explicitly, which means the compiler can show you exactly where data might be reshaped or lost.</p>
 <h2><code>as</code>: the blunt instrument</h2>
-<p><code>as</code> works between numeric types, and between a few other specific pairs (like <code>char</code> and <code>u32</code>). It's infallible by design — it never panics — which means it has to make a decision when a value doesn't fit, and that decision is &quot;truncate&quot; or &quot;saturate,&quot; not &quot;error.&quot;</p>
+<p><code>as</code> works between numeric types, and between a few other specific pairs like <code>char</code> and <code>u32</code>. It is infallible by design and never panics, which means it has to make a decision when a value does not fit. That decision is &quot;truncate&quot; or &quot;saturate,&quot; not &quot;error.&quot;</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-cm">// Integer-to-integer: truncates by dropping the high bits.</span>
     <span class="tk-kw">let</span> big: <span class="tk-ty">i32</span> = <span class="tk-nm">300</span>;
     <span class="tk-kw">let</span> truncated = big <span class="tk-kw">as</span> <span class="tk-ty">u8</span>;
-    <span class="tk-mc">assert_eq!</span>(truncated, <span class="tk-nm">44</span>); <span class="tk-cm">// 300 % 256 == 44 — almost certainly not what you wanted</span>
+    <span class="tk-mc">assert_eq!</span>(truncated, <span class="tk-nm">44</span>); <span class="tk-cm">// 300 % 256 == 44, almost certainly not what you wanted</span>
 
     <span class="tk-cm">// Float-to-integer: saturates at the target type's bounds instead of</span>
-    <span class="tk-cm">// wrapping or producing garbage (this has been the stable behavior</span>
-    <span class="tk-cm">// since Rust 1.45 — earlier `as` casts here were undefined behavior).</span>
+    <span class="tk-cm">// wrapping or producing garbage. This has been the stable behavior</span>
+    <span class="tk-cm">// since Rust 1.45.</span>
     <span class="tk-kw">let</span> too_big = <span class="tk-nm">1e10_f64</span> <span class="tk-kw">as</span> <span class="tk-ty">i32</span>;
     <span class="tk-mc">assert_eq!</span>(too_big, <span class="tk-ty">i32</span><span class="tk-op">::</span><span class="tk-ty">MAX</span>);
 
-    <span class="tk-cm">// Widening (small type -&gt; big type) is always lossless.</span>
+    <span class="tk-cm">// Widening (small type to big type) is always lossless.</span>
     <span class="tk-kw">let</span> small: <span class="tk-ty">u8</span> = <span class="tk-nm">38</span>;
     <span class="tk-kw">let</span> widened = small <span class="tk-kw">as</span> <span class="tk-ty">u16</span>;
     <span class="tk-mc">assert_eq!</span>(widened, <span class="tk-nm">38</span>);
@@ -587,9 +587,9 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> code = <span class="tk-st">'R'</span> <span class="tk-kw">as</span> <span class="tk-ty">u32</span>;
     <span class="tk-mc">assert_eq!</span>(code, <span class="tk-nm">82</span>);
 }</code></pre></div>
-<blockquote><p>Because <code>as</code> silently truncates, it's the wrong tool whenever an out-of-range value would be a <em>bug</em> rather than something to clamp. Use <code>TryFrom</code> (below) when you want a conversion that can fail loudly instead.</p></blockquote>
+<blockquote><p>Because <code>as</code> silently truncates, it is the wrong tool whenever an out-of-range value would be a bug rather than something to clamp. Use <code>TryFrom</code> (below) when you want a conversion that can fail loudly instead.</p></blockquote>
 <h2><code>From</code> / <code>Into</code>: infallible, type-directed conversion</h2>
-<p>Implementing <code>From&lt;A&gt; for B</code> gives you <code>B::from(a)</code> for free — and also <code>a.into()</code>, because the standard library provides a blanket <code>Into</code> implementation for every <code>From</code>. These are the idiomatic way to convert between your <em>own</em> types.</p>
+<p>Implementing <code>From&lt;A&gt; for B</code> gives you <code>B::from(a)</code> for free, and also <code>a.into()</code>, because the standard library provides a blanket <code>Into</code> implementation for every <code>From</code>. These are the idiomatic way to convert between your own types.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">struct</span> <span class="tk-ty">Celsius</span>(<span class="tk-ty">f64</span>);
 <span class="tk-kw">struct</span> <span class="tk-ty">Fahrenheit</span>(<span class="tk-ty">f64</span>);
 
@@ -608,9 +608,9 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert_eq!</span>(f1.<span class="tk-nm">0</span>, <span class="tk-nm">212.0</span>);
     <span class="tk-mc">assert_eq!</span>(f2.<span class="tk-nm">0</span>, <span class="tk-nm">212.0</span>);
 }</code></pre></div>
-<p><code>From</code> is also how the standard library lets one function signature accept several input types — <code>String::from(&amp;str)</code>, <code>Vec::from([T; N])</code>, and <code>?</code>-based error conversion (see <a href="20-result-and-panic.html">Result and Panic</a>) all lean on it.</p>
+<p><code>From</code> is also how the standard library lets one function signature accept several input types. <code>String::from(&amp;str)</code>, <code>Vec::from([T; N])</code>, and <code>?</code>-based error conversion (see <a href="20-result-and-panic.html">Result and Panic</a>) all lean on it.</p>
 <h2><code>TryFrom</code> / <code>TryInto</code>: conversion that can fail</h2>
-<p>When a conversion might not be valid for every input, implement <code>TryFrom</code> instead — it returns a <code>Result</code>, so the failure path is forced into the open instead of silently truncating like <code>as</code> would.</p>
+<p>When a conversion might not be valid for every input, implement <code>TryFrom</code> instead. It returns a <code>Result</code>, so the failure path is forced into the open instead of silently truncating like <code>as</code> would.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>convert<span class="tk-op">::</span><span class="tk-ty">TryFrom</span>;
 
 <span class="tk-kw">struct</span> <span class="tk-ty">EvenNumber</span>(<span class="tk-ty">i32</span>);
@@ -641,7 +641,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">assert!</span>(result.<span class="tk-fn">is_err</span>());
 }</code></pre></div>
 <h2>Parsing strings into numbers</h2>
-<p><code>str::parse::&lt;T&gt;()</code> is built on <code>FromStr</code>, and returns a <code>Result</code> — parsing is a textbook example of a conversion that can fail (the text might not be a valid number at all).</p>
+<p><code>str::parse::&lt;T&gt;()</code> is built on <code>FromStr</code> and returns a <code>Result</code>. Parsing is a textbook example of a conversion that can fail because the text might not be a valid number at all.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> good: <span class="tk-ty">Result</span>&lt;<span class="tk-ty">i32</span>, _&gt; = <span class="tk-st">&quot;42&quot;</span>.<span class="tk-fn">parse</span>();
     <span class="tk-mc">assert_eq!</span>(good, <span class="tk-ty">Ok</span>(<span class="tk-nm">42</span>));
@@ -649,13 +649,13 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> bad: <span class="tk-ty">Result</span>&lt;<span class="tk-ty">i32</span>, _&gt; = <span class="tk-st">&quot;forty-two&quot;</span>.<span class="tk-fn">parse</span>();
     <span class="tk-mc">assert!</span>(bad.<span class="tk-fn">is_err</span>());
 
-    <span class="tk-cm">// The turbofish ::&lt;T&gt; tells parse() what to produce, when it can't be</span>
+    <span class="tk-cm">// The turbofish ::&lt;T&gt; tells parse() what to produce when it cannot be</span>
     <span class="tk-cm">// inferred from context.</span>
     <span class="tk-kw">let</span> pi = <span class="tk-st">&quot;3.14&quot;</span>.parse<span class="tk-op">::</span>&lt;<span class="tk-ty">f64</span>&gt;().<span class="tk-fn">unwrap</span>();
     <span class="tk-mc">assert!</span>((pi - <span class="tk-nm">3.14</span>).<span class="tk-fn">abs</span>() &lt; <span class="tk-ty">f64</span><span class="tk-op">::</span><span class="tk-ty">EPSILON</span>);
 }</code></pre></div>
 <h2>The other direction: making a type printable</h2>
-<p><code>ToString</code> is implemented automatically for anything that implements <code>Display</code> — so implement <code>Display</code>, and <code>.to_string()</code> comes along for free.</p>
+<p><code>ToString</code> is implemented automatically for anything that implements <code>Display</code>, so implement <code>Display</code> and <code>.to_string()</code> comes along for free.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">use</span> std<span class="tk-op">::</span>fmt;
 
 <span class="tk-kw">struct</span> <span class="tk-ty">Point</span> {
@@ -681,7 +681,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="18-lifetimes.html"><span class="dir">Next &rarr;</span>Sheet 18 &middot; Lifetimes</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

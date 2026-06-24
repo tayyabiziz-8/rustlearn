@@ -3,7 +3,7 @@ desc: match, if let, matches!, and binding sub-patterns with @.
 
 ## match
 
-`match` compares a value against a series of patterns and runs the code for the first one that fits. It's **exhaustive** - the compiler refuses to build unless every possible case is handled, which is what makes it safer than a chain of `if/else if`.
+`match` compares a value against a series of patterns and runs the code for the first one that fits. It is **exhaustive**: the compiler refuses to build unless every possible case is handled, which is what makes it safer than a chain of `if/else if`.
 
 ```rust
 enum Direction {
@@ -18,7 +18,7 @@ fn main() {
 
     match dir {
         Direction::East => println!("East"),
-        Direction::South | Direction::North => println!("South or North"), // matches either
+        Direction::South | Direction::North => println!("South or North"),
         _ => println!("West"), // catch-all for anything not named above
     }
 }
@@ -44,7 +44,7 @@ When you only care about a single pattern and want to ignore everything else, `i
 ```rust
 enum Coin {
     Penny,
-    Quarter(u8), // carries a "state code" or similar
+    Quarter(u8),
 }
 
 fn main() {
@@ -70,7 +70,7 @@ fn main() {
 }
 ```
 
-## Binding with @, and matching ranges inside a struct
+## Binding with @ and matching ranges inside a struct
 
 `name @ pattern` lets you test a value against a pattern *and* capture it into `name` at the same time.
 

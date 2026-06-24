@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Traits &mdash; rustlearn</title>
+<title>Traits | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,9 +563,9 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Generics & Abstraction &middot; Sheet 16 of 23</div>
   <h1>Traits</h1>
   <div class="content">
-<p>A <code>trait</code> defines behavior that multiple types can share — similar in spirit to an interface in other languages, but with the option of providing a default implementation.</p>
+<p>A <code>trait</code> defines behavior that multiple types can share. It is similar in spirit to an interface in other languages, but with the option of providing a default implementation.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">trait</span> <span class="tk-ty">Hello</span> {
-    <span class="tk-cm">// Default implementation — types can use this as-is...</span>
+    <span class="tk-cm">// Default implementation. Types can use this as-is...</span>
     <span class="tk-kw">fn</span> <span class="tk-fn">say_hi</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
         <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;hi&quot;</span>)
     }
@@ -580,7 +580,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">fn</span> <span class="tk-fn">say_something</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-ty">String</span> {
         <span class="tk-ty">String</span><span class="tk-op">::</span><span class="tk-fn">from</span>(<span class="tk-st">&quot;I'm a good student&quot;</span>)
     }
-    <span class="tk-cm">// say_hi is not overridden — it uses the trait's default</span>
+    <span class="tk-cm">// say_hi is not overridden, it uses the trait's default</span>
 }
 
 <span class="tk-kw">struct</span> <span class="tk-ty">Teacher</span>;
@@ -626,7 +626,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;One foot is {comparison} than one meter.&quot;</span>);
 }</code></pre></div>
 <h2>Static dispatch vs. dynamic dispatch</h2>
-<p>There are two ways to write a function that accepts &quot;anything implementing trait <code>Animal</code>&quot;:</p>
+<p>There are two ways to write a function that accepts anything implementing trait <code>Animal</code>:</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">trait</span> <span class="tk-ty">Animal</span> {
     <span class="tk-kw">fn</span> <span class="tk-fn">speak</span>(<span class="tk-op">&amp;</span><span class="tk-kw">self</span>) <span class="tk-op">-&gt;</span> <span class="tk-op">&amp;</span><span class="tk-ty">str</span>;
 }
@@ -641,15 +641,15 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
 }
 
 <span class="tk-cm">// STATIC DISPATCH: `impl Animal` generates a separate, specialized copy of</span>
-<span class="tk-cm">// this function for every concrete type it's called with. No runtime cost,</span>
+<span class="tk-cm">// this function for every concrete type it is called with. No runtime cost,</span>
 <span class="tk-cm">// but every call site must know the concrete type at compile time.</span>
 <span class="tk-kw">fn</span> <span class="tk-fn">greet_static</span>(animal: <span class="tk-op">&amp;</span><span class="tk-kw">impl</span> <span class="tk-ty">Animal</span>) {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;static: {}&quot;</span>, animal.<span class="tk-fn">speak</span>());
 }
 
-<span class="tk-cm">// DYNAMIC DISPATCH: `&amp;dyn Animal` is a &quot;fat pointer&quot; — data pointer plus a</span>
-<span class="tk-cm">// vtable pointer for method lookup. One function body handles every type,</span>
-<span class="tk-cm">// resolved at runtime, at the cost of a small indirection per call.</span>
+<span class="tk-cm">// DYNAMIC DISPATCH: `&amp;dyn Animal` is a fat pointer, meaning a data pointer</span>
+<span class="tk-cm">// plus a vtable pointer for method lookup. One function body handles every</span>
+<span class="tk-cm">// type, resolved at runtime, at the cost of a small indirection per call.</span>
 <span class="tk-kw">fn</span> <span class="tk-fn">greet_dynamic</span>(animal: <span class="tk-op">&amp;</span><span class="tk-kw">dyn</span> <span class="tk-ty">Animal</span>) {
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;dynamic: {}&quot;</span>, animal.<span class="tk-fn">speak</span>());
 }
@@ -661,14 +661,14 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-fn">greet_static</span>(<span class="tk-op">&amp;</span>dog);
     <span class="tk-fn">greet_static</span>(<span class="tk-op">&amp;</span>cat);
 
-    <span class="tk-cm">// dyn is also what lets you store DIFFERENT concrete types in one Vec —</span>
-    <span class="tk-cm">// see the trait-object example in the Vectors chapter.</span>
+    <span class="tk-cm">// dyn is also what lets you store DIFFERENT concrete types in one Vec.</span>
+    <span class="tk-cm">// See the trait-object example in the Vectors chapter.</span>
     <span class="tk-kw">let</span> animals: <span class="tk-ty">Vec</span>&lt;<span class="tk-ty">Box</span>&lt;<span class="tk-kw">dyn</span> <span class="tk-ty">Animal</span>&gt;&gt; = <span class="tk-mc">vec!</span>[<span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(dog), <span class="tk-ty">Box</span><span class="tk-op">::</span><span class="tk-fn">new</span>(cat)];
     <span class="tk-kw">for</span> a <span class="tk-kw">in</span> <span class="tk-op">&amp;</span>animals {
         <span class="tk-fn">greet_dynamic</span>(a.<span class="tk-fn">as_ref</span>());
     }
 }</code></pre></div>
-<blockquote><p>Rule of thumb: reach for <code>impl Trait</code> / generics by default (faster, and errors show up at the call site). Reach for <code>dyn Trait</code> when you need a heterogeneous collection, or when the concrete type genuinely isn't known until runtime — e.g. plugins loaded by name.</p></blockquote>
+<blockquote><p>Rule of thumb: reach for <code>impl Trait</code> and generics by default (faster, and errors show up at the call site). Reach for <code>dyn Trait</code> when you need a heterogeneous collection, or when the concrete type genuinely is not known until runtime such as plugins loaded by name.</p></blockquote>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -676,7 +676,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="17-type-conversion.html"><span class="dir">Next &rarr;</span>Sheet 17 &middot; Type Conversion</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

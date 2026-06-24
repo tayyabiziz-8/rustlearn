@@ -1,7 +1,7 @@
 # Generics
 desc: Writing code once that works across many types, with zero runtime cost.
 
-Generics let you write a struct, enum, or function once and have it work for many concrete types - the compiler generates a specialized version for each type actually used (called *monomorphization*), so there's no runtime overhead compared to writing it by hand for each type.
+Generics let you write a struct, enum, or function once and have it work for many concrete types. The compiler generates a specialized version for each type actually used (called *monomorphization*), so there is no runtime overhead compared to writing it by hand for each type.
 
 ```rust
 struct Point<T, U> {
@@ -65,7 +65,7 @@ fn main() {
 
 ## Bounding what a generic type can do
 
-Without constraints, a generic `T` could be anything - so the compiler won't let you call methods on it. A **trait bound** (covered in full in [Traits](16-traits.html)) says "T must support this behavior."
+Without constraints, a generic `T` could be anything, so the compiler will not let you call methods on it. A **trait bound** (covered in full in [Traits](16-traits.html)) says "T must support this behavior."
 
 ```rust
 use std::fmt::Display;

@@ -1,5 +1,5 @@
 # Vectors
-desc: Dynamically-sized, heap-allocated, growable lists - and the conversions in and out of them.
+desc: Dynamically-sized, heap-allocated, growable lists and the conversions in and out of them.
 
 `Vec<T>` is the array's growable cousin: heap-allocated, resizable at runtime, created with `Vec::new()` or the `vec!` macro.
 

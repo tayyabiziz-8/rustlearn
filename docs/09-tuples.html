@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tuples &mdash; rustlearn</title>
+<title>Tuples | rustlearn</title>
 <meta name="description" content="A from-scratch Rust field guide: ownership, borrowing, generics, error handling, smart pointers, and async, with fully worked, unambiguous code examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,7 +563,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
   <div class="sheet-eyebrow">Collections &middot; Sheet 09 of 23</div>
   <h1>Tuples</h1>
   <div class="content">
-<p>A tuple groups a fixed number of values, which can each be a <em>different</em> type. Access fields with <code>.0</code>, <code>.1</code>, etc., or destructure them by pattern.</p>
+<p>A tuple groups a fixed number of values that can each be a <em>different</em> type. Access fields with <code>.0</code>, <code>.1</code>, etc., or destructure them by pattern.</p>
 <div class="code-block"><div class="code-bar"><span class="code-dot"></span><span class="code-lang">rust</span></div><pre><code><span class="tk-kw">fn</span> <span class="tk-fn">main</span>() {
     <span class="tk-kw">let</span> t1: (<span class="tk-ty">u8</span>, <span class="tk-ty">i16</span>) = (<span class="tk-nm">0</span>, -<span class="tk-nm">1</span>);
     <span class="tk-kw">let</span> t2: (<span class="tk-ty">u8</span>, (<span class="tk-ty">i16</span>, <span class="tk-ty">u32</span>)) = (<span class="tk-nm">0</span>, (-<span class="tk-nm">1</span>, <span class="tk-nm">1</span>));
@@ -580,7 +580,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <span class="tk-kw">let</span> (s1, s2) = t.<span class="tk-fn">clone</span>(); <span class="tk-cm">// clone the whole tuple since String isn't Copy</span>
     <span class="tk-mc">println!</span>(<span class="tk-st">&quot;{s1}, {s2}, {t:?}&quot;</span>);
 }</code></pre></div>
-<blockquote><p>The <code>println!(&quot;{t:?}&quot;)</code> form above needs the <code>Debug</code> trait, which tuples implement automatically as long as every element does. Tuples longer than 12 elements lose this automatic <code>Debug</code>/<code>PartialEq</code> support — past that point, reach for a named <code>struct</code> instead.</p></blockquote>
+<blockquote><p>The <code>println!(&quot;{t:?}&quot;)</code> form above needs the <code>Debug</code> trait, which tuples implement automatically as long as every element does. Tuples longer than 12 elements lose this automatic <code>Debug</code> and <code>PartialEq</code> support. Past that point, reach for a named <code>struct</code> instead.</p></blockquote>
 
   </div>
   <nav class="chapter-nav" aria-label="Chapter navigation">
@@ -588,7 +588,7 @@ a:focus-visible, button:focus-visible, .nav-link:focus-visible {
     <a class="next" href="10-hashmap.html"><span class="dir">Next &rarr;</span>Sheet 10 &middot; HashMap</a>
   </nav>
 </article>
-<footer class="site-footer">built with a hand-rolled Rust static site generator &mdash; no JS required</footer>
+<footer class="site-footer">built with a hand-rolled Rust static site generator. No JS required.</footer>
 </main>
 </div>
 </body>

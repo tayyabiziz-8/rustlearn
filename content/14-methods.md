@@ -1,7 +1,7 @@
 # Methods & Associated Functions
 desc: impl blocks, &self vs self, and the difference between a method and an associated function.
 
-An `impl` block attaches functions to a type. Inside it, a function that takes `self` (in some form) is a **method**, called with `value.method()`. A function that doesn't take `self` is an **associated function**, called with `Type::function()` - `String::from(...)` is one you've already used.
+An `impl` block attaches functions to a type. Inside it, a function that takes `self` in some form is a **method**, called with `value.method()`. A function that does not take `self` is an **associated function**, called with `Type::function()`. You have already used one: `String::from(...)`.
 
 ```rust
 struct Rectangle {
@@ -21,7 +21,7 @@ fn main() {
 }
 ```
 
-## `&self`, `&mut self`, `self` - three different borrows
+## `&self`, `&mut self`, `self`: three different borrows
 
 ```rust
 struct Counter {
@@ -29,12 +29,12 @@ struct Counter {
 }
 
 impl Counter {
-    // Associated function - no `self` parameter. Conventionally named `new`.
+    // Associated function with no `self` parameter. Conventionally named `new`.
     fn new() -> Self {
         Self { count: 0 }
     }
 
-    // &self: read-only borrow. Use this whenever you don't need to mutate.
+    // &self: read-only borrow. Use this whenever you do not need to mutate.
     fn value(&self) -> u32 {
         self.count
     }
@@ -46,7 +46,7 @@ impl Counter {
 
     // self (no &): takes ownership and consumes the value. Used when a
     // method should transform something into a different value and the
-    // original shouldn't be usable afterward.
+    // original should not be usable afterward.
     fn into_value(self) -> u32 {
         self.count
     }
@@ -59,7 +59,7 @@ fn main() {
     assert_eq!(c.value(), 2);
 
     let final_value = c.into_value();
-    // c can no longer be used here - into_value consumed it
+    // c can no longer be used here, into_value consumed it
     assert_eq!(final_value, 2);
 }
 ```

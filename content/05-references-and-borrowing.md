@@ -1,24 +1,24 @@
 # References & Borrowing
 desc: Accessing data without taking ownership, and the rules that make it safe.
 
-A reference (`&T` or `&mut T`) lets you access a value without taking ownership of it - this is called **borrowing**.
+A reference (`&T` or `&mut T`) lets you access a value without taking ownership of it. This is called **borrowing**.
 
 **The borrowing rules, enforced at compile time:**
-1. At any given time, you can have *either* one mutable reference *or* any number of immutable references - never both.
-2. References must always point to valid data (no dangling references).
+1. At any given time, you can have either one mutable reference or any number of immutable references, never both simultaneously.
+2. References must always point to valid data. No dangling references.
 
 ## Immutable borrows
 
 ```rust
 fn main() {
     let s1 = String::from("hello");
-    let len = calculate_length(&s1); // &s1 borrows, doesn't take ownership
+    let len = calculate_length(&s1); // &s1 borrows but does not take ownership
     println!("length of '{s1}' is {len}"); // s1 is still usable
 }
 
 fn calculate_length(s: &String) -> usize {
     s.len()
-} // s goes out of scope, but it doesn't own the data, so nothing is dropped
+} // s goes out of scope but it does not own the data, so nothing is dropped
 ```
 
 ## Mutable borrows
@@ -35,17 +35,17 @@ fn add_world(s: &mut String) {
 }
 ```
 
-## Rule 1 in practice: one mutable XOR many immutable
+## Rule 1 in practice: one mutable or many immutable
 
 ```rust
 fn main() {
     let mut s = String::from("hello");
 
     let r1 = &s;
-    let r2 = &s; // fine - multiple immutable borrows are allowed
+    let r2 = &s; // fine, multiple immutable borrows are allowed
     println!("{r1} and {r2}");
-    // r1 and r2's last use was the line above, so their borrow "ends" here
-    // (this is the compiler's non-lexical lifetime analysis)
+    // r1 and r2's last use was the line above, so their borrow ends here.
+    // This is the compiler's non-lexical lifetime analysis.
 
     let r3 = &mut s; // fine now, because r1/r2 are no longer used afterward
     r3.push_str(", world");
@@ -73,7 +73,7 @@ fn main() {
 // fn dangle() -> &String {
 //     let s = String::from("hello");
 //     &s
-// } // s is dropped here - the reference we tried to return would point
+// } // s is dropped here. The reference we tried to return would point
 //   // at freed memory. The compiler rejects this before it can happen.
 
 // The fix: return the owned value itself, transferring ownership out.
@@ -88,4 +88,4 @@ fn main() {
 }
 ```
 
-> Borrowing a `String` followed by mutating it through the *original* owner is rejected - the immutable borrow and the mutation can't coexist. For example, taking `&s` and then calling `s.clear()` while the reference is still in use is a compile error, because `clear()` requires `&mut self` and you already have an outstanding `&s`.
+> Borrowing a `String` and then mutating it through the original owner is rejected. The immutable borrow and the mutation cannot coexist. For example, taking `&s` and then calling `s.clear()` while the reference is still in use is a compile error, because `clear()` requires `&mut self` and you already have an outstanding `&s`.

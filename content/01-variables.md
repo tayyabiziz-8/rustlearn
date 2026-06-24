@@ -1,7 +1,7 @@
 # Variables & Basic Types
 desc: Mutability, destructuring, integer/float types, chars, and the unit type.
 
-By default, variables in Rust are **immutable**. You opt into mutability explicitly with `mut` - the compiler is telling you, up front, which values are allowed to change.
+By default, variables in Rust are **immutable**. You opt into mutability explicitly with `mut`. The compiler tells you up front which values are allowed to change.
 
 ```rust
 fn main() {
@@ -49,8 +49,8 @@ fn main() {
     let x = 38_u8;            // type is u8, the underscore is just a visual separator
     let y: u16 = 38_u8 as u16; // explicit conversion with `as`
 
-    // Floating point is imprecise - this assertion panics, even though it
-    // "looks" true on paper.
+    // Floating point is imprecise. This assertion panics, even though it
+    // looks true on paper.
     // assert!(0.1 + 0.2 == 0.3); // panics: 0.1 + 0.2 == 0.30000000000000004
 
     println!("{x} {y}");
@@ -59,7 +59,7 @@ fn main() {
 
 ## Chars, ASCII, and bit operations
 
-A Rust `char` is always 4 bytes - it represents a full Unicode scalar value, not just ASCII.
+A Rust `char` is always 4 bytes. It represents a full Unicode scalar value, not just ASCII.
 
 ```rust
 fn main() {
@@ -79,7 +79,7 @@ fn main() {
 
 ## The unit type
 
-A function with no `-> ReturnType` returns `()`, the **unit type** - Rust's "nothing to see here." It's not the same as `void` in C; it's an actual zero-sized value you can bind.
+A function with no `-> ReturnType` returns `()`, the **unit type**. It is Rust's way of saying "nothing to return here." It is not the same as `void` in C; it is an actual zero-sized value you can bind.
 
 ```rust
 fn print_status() {
@@ -92,18 +92,18 @@ fn main() {
 }
 ```
 
-> A trailing semicolon after the last expression in a function body turns that expression into a statement - and statements evaluate to `()`. So `fn five() -> i32 { 5; }` is a compile error: the body now evaluates to `()`, not `i32`.
+> A trailing semicolon after the last expression in a function body turns that expression into a statement, and statements evaluate to `()`. So `fn five() -> i32 { 5; }` is a compile error because the body now evaluates to `()`, not `i32`.
 
 ## Expressions vs. statements
 
-A block `{ ... }` is itself an expression: its value is whatever the last line evaluates to, **as long as that line has no trailing semicolon**.
+A block `{ ... }` is itself an expression. Its value is whatever the last line evaluates to, **as long as that line has no trailing semicolon**.
 
 ```rust
 fn main() {
     let y = {
         let x_squared = 3 * 3;
         let x_cube = x_squared * 3;
-        x_cube + x_squared + 3 // no semicolon - this is the block's value
+        x_cube + x_squared + 3 // no semicolon, so this is the block's value
     };
     assert_eq!(y, 39);
 }
@@ -111,7 +111,7 @@ fn main() {
 
 ## Diverging functions
 
-A function that never returns has the special return type `!` ("never"). The compiler knows nothing after the call can possibly run.
+A function that never returns has the special return type `!` (called "never"). The compiler knows nothing after the call can possibly run.
 
 ```rust
 fn explode(reason: &str) -> ! {
